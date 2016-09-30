@@ -3,7 +3,7 @@
         "target": "es6",
         "module": "system",
         "removeComments": true,
-        "outFile": "./dist/engine.js",
+        "outFile": "./dist/blueberry.js",
         "declaration": true,
         "newLine": "LF"
     },
@@ -15,6 +15,8 @@
         "src/core/Component.ts",
         "src/core/GameObject.ts",
         "src/core/Sprite.ts",
+        "src/core/Stage.ts",
+        "src/core/Assets.ts",
         "src/core/Engine.ts",
         // Load the componenets
         "src/components/SpriteRenderer.ts",

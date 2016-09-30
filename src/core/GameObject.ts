@@ -1,7 +1,8 @@
 class GameObject {
 
+    private _destroy: boolean = false;
+    private _started: boolean = false;
     private _components: Component[] = [];
-
     private _transform: Transform;
 
     public constructor(name: string = 'GameObject') {
@@ -15,6 +16,10 @@ class GameObject {
 
     public get transform(): Transform {
         return this._transform;
+    }
+
+    public destroy() {
+        this._destroy = true;
     }
 
     public addComponent<T extends Component>(type: ComponentType<T>): T {
@@ -43,6 +48,10 @@ class GameObject {
     public sendMessage(message: string) {
         this._components.forEach(component => {
             if (typeof component[message] == 'function') {
+                if (message == 'start') {
+                    if (this._started) { return; }
+                    this._started = true;
+                }
                 component[message]();
             }
         });
