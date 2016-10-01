@@ -48,11 +48,11 @@ class Vector2 {
     }
 
     public static get up(): Vector2 {
-        return new Vector2(0, 1);
+        return new Vector2(0, -1);
     }
 
     public static get down(): Vector2 {
-        return new Vector2(0, -1);
+        return new Vector2(0, 1);
     }
 
     public static get left(): Vector2 {

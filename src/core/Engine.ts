@@ -1,17 +1,14 @@
 class Engine {
 
-    private lastLoopTime: number = Time.getNanoSeconds;
-    private targetFps: number = 120;
-    private optimalTime: number = 1000000000 / this.targetFps;
-    private lastFpsTime: number = 0;
-
-    private gameLoopTick: number = 0;
-    private isPlaying: boolean = true;
-
-    private startTime: number = new Date().getTime();
-
-    private static gameObjects: GameObject[] = [];
-
+    private static _lastLoopTime: number = Time.getNanoSeconds;
+    private static _targetFps: number = 120;
+    private static _optimalTime: number = 1000000000 / Engine._targetFps;
+    private static _lastFpsTime: number = 0;
+    private static _gameLoopTick: number = 0;
+    private static _isPlaying: boolean = true;
+    private static _startTime: number = new Date().getTime();
+    private static _gameObjects: GameObject[] = [];
+    private static _invokers: Invoke[] = [];
     private static _ready: Function;
     private static _config: Function;
     private static _canvasSelector: string = 'body';
@@ -20,7 +17,7 @@ class Engine {
         this._ready = callback;
     }
 
-    public static config(selector: string, callback: (canvas: Stage) => void) {
+    public static config(selector: string, callback: Function) {
         this._config = callback;
     }
 
@@ -35,117 +32,94 @@ class Engine {
     }
 
     public init() {
-        let stage = Stage.create(Engine._canvasSelector);
-        Engine._config(stage);
+        Stage.create(Engine._canvasSelector);
+        Engine._config();
+        Stage.createBuffer();
         Engine._ready();
-        this.tick();
+        Engine.tick();
     }
 
     public static addGameObject(gameObject: GameObject) {
-        this.gameObjects.push(gameObject);
+        this._gameObjects.push(gameObject);
     }
 
-    public tick() {
+    public static addInvoker(repeater: Invoke) {
+        this._invokers.push(repeater);
+    }
+
+    public static tick() {
         let d = new Date().getTime();
-        Time.setFrameTime((d - this.startTime) / 1000);
+        Time.setFrameTime((d - Engine._startTime) / 1000);
         var nanoSeconds = Time.getNanoSeconds;
         var now = nanoSeconds;
-        var updateLength = now - this.lastLoopTime;
-        this.lastLoopTime = now;
-        var delta = updateLength / this.optimalTime;
+        var updateLength = now - Engine._lastLoopTime;
+        Engine._lastLoopTime = now;
+        var delta = updateLength / Engine._optimalTime;
 
-        this.lastFpsTime += updateLength;
-        if (this.lastFpsTime >= 1000000000) {
-            this.lastFpsTime = 0;
+        Engine._lastFpsTime += updateLength;
+        if (Engine._lastFpsTime >= 1000000000) {
+            Engine._lastFpsTime = 0;
         }
 
-        Time.setDeltaTime(delta / this.targetFps);
+        Time.setDeltaTime(delta / Engine._targetFps);
 
-        this.start();
-        this.update();
-        this.destroy();
-        this.render();
-
-        var next = (this.lastLoopTime - nanoSeconds + this.optimalTime) / 1000000;
-        if (this.isPlaying) {
-            this.gameLoopTick = setTimeout(this.tick.bind(this), next);
-        }
+        Engine.start();
+        Engine.invoke();
+        Engine.update();
+        Engine.destroy();
+        Engine.render();
     }
 
-    private update() {
-        Engine.gameObjects.forEach(go => {
+    private static update() {
+        Engine._gameObjects.forEach(go => {
             go.sendMessage('update');
         });
     }
 
-    private start() {
-        Engine.gameObjects.forEach(go => {
+    private static invoke() {
+        let remove: Invoke[] = [];
+        Engine._invokers.forEach(rep => {
+            if (!rep.firstRun && Time.time - rep.lastCalled >= rep.delay) {
+                rep.callback();
+                rep.lastCalled = Time.time;
+                rep.firstRun = true;
+            }else if (Time.time - rep.lastCalled >= rep.interval && rep.repeats) {
+                rep.callback();
+                rep.lastCalled = Time.time
+            }
+            if (!rep.repeats && rep.firstRun) {
+                remove.push(rep);
+            }
+        });
+        var c = Engine._invokers.filter(item => {
+            return remove.indexOf(item) === -1;
+        });
+        Engine._invokers = c;
+    }
+
+    private static start() {
+        Engine._gameObjects.forEach(go => {
             go.sendMessage('start');
         })
     }
 
-    private destroy() {
-        if (Engine.gameObjects.length > 0) {
-            for (let i = Engine.gameObjects.length - 1; i > -1; i--) {
-                let go = Engine.gameObjects[i];
+    private static destroy() {
+        if (Engine._gameObjects.length > 0) {
+            for (let i = Engine._gameObjects.length - 1; i > -1; i--) {
+                let go = Engine._gameObjects[i];
                 if (go['_destroy']) {
-                    let index = Engine.gameObjects.indexOf(go);
-                    Engine.gameObjects.splice(index, 1);
+                    let index = Engine._gameObjects.indexOf(go);
+                    Engine._gameObjects.splice(index, 1);
                 }
             }
         }
     }
 
-    private render() {
-        // Engine.canvas.context.clearRect(0, 0, Engine.canvas.width, Engine.canvas.height);
-        Stage.clear();
-        let renderItems: GameObject[] = Engine.gameObjects;
-        if (renderItems.length > 1) {
-            renderItems.sort(function (a, b) {
-                let ar = a.getComponent(SpriteRenderer);
-                let br = b.getComponent(SpriteRenderer);
-                if (ar && br) {
-                    if (ar.depth < br.depth)
-                        return -1;
-                    if (ar.depth > br.depth)
-                        return 1;
-                }
-                return 0;
-            });
-        }
-        // renderItems.forEach(item => {
-        for (let i = 0; i < renderItems.length; i++){
-            let item = renderItems[i];
-            // item.components.forEach(comp => {
-            for (let j = 0; j < item.components.length; j++){
-                let comp = item.components[j];
-                if (comp instanceof SpriteRenderer && comp.sprite.image && comp.isVisible) {
-                    if (comp.sprite.frames == 0) {
-                        Stage.draw(
-                            comp.sprite.image,
-                            item.transform.position.x,
-                            item.transform.position.y
-                        );
-                    } else {
-                        let sprite = comp.sprite.item(comp.frame);
-                        Stage.draw(
-                            // Source Image
-                            comp.sprite.image,
-                            // Position in the sprite sheet
-                            sprite.left, sprite.top,
-                            sprite.width, sprite.height,
-                            // Position on the canvas
-                            item.transform.position.x,
-                            item.transform.position.y,
-                            // Size on the canvas
-                            sprite.width, sprite.height
-                        );
-                    }
-                }
-            }
-            // });
-        }
-        // });
+    private static render() {
+        Stage.clearBuffer();
+        Stage.render(this._gameObjects);
+        Stage.draw();
+        requestAnimationFrame(Engine.tick);
     }
 
 }

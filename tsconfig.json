@@ -11,6 +11,10 @@
         // Load any utilites
         "src/utils/Time.ts",
         "src/utils/Vector2.ts",
+        "src/utils/Rotation.ts",
+        "src/utils/Random.ts",
+        "src/utils/Invoke.ts",
+        "src/utils/functions.ts",
         // Load the core
         "src/core/Component.ts",
         "src/core/GameObject.ts",
