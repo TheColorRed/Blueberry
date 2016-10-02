@@ -49,8 +49,8 @@ class GameObject {
         this._components.forEach(component => {
             if (typeof component[message] == 'function') {
                 if (message == 'start') {
-                    if (this._started) { return; }
-                    this._started = true;
+                    if (component['started']) { return; }
+                    component['started'] = true;
                 }
                 component[message]();
             }

@@ -9,11 +9,11 @@ class Sprite {
     private _width: number = 0;
     private _height: number = 0;
 
-    private _image: ImageAsset;
+    private _image: HTMLImageElement;
     private _sprites: SubSprite[] = [];
 
-    public constructor(image: ImageAsset) {
-        this._image = image;
+    public constructor(asset: HTMLImageElement) {
+        this._image = asset;
     }
 
     public subImages(width: number, height: number, total: number, rows = 1) {
@@ -38,7 +38,7 @@ class Sprite {
     }
 
     public get image(): HTMLImageElement {
-        return this._image.image;
+        return this._image;
     }
 
     public get frames(): number {
@@ -49,7 +49,7 @@ class Sprite {
         if (this.frames > 0) {
             return this._sprites[0].height;
         } else {
-            return this._image.image.height;
+            return this._image.height;
         }
     }
 
@@ -57,7 +57,7 @@ class Sprite {
         if (this.frames > 0) {
             return this._sprites[0].width;
         } else {
-            return this._image.image.width;
+            return this._image.width;
         }
     }
 

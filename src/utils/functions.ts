@@ -13,3 +13,20 @@ function invoke(callback:Function, delay: number) {
     r.repeats = false;
     Engine.addInvoker(r);
 }
+
+
+interface GameObjectType<T extends Prefab> {
+    new(): T;
+}
+
+function instantiate<T extends Prefab>(object: GameObjectType<T>, position?: Vector2, rotation?: Rotation): GameObject {
+    let g = new object() as T;
+    return g.init(position, rotation);
+}
+
+function destroy(gameObject: GameObject, delay: number = 0) {
+    invoke(function () {
+        gameObject.destroy();
+    }, delay);
+
+}

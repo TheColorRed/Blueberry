@@ -6,5 +6,6 @@ class Component {
 
     protected gameObject: GameObject;
     protected transform: Transform;
+    protected started: boolean = false;
 
 }

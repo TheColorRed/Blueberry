@@ -18,16 +18,23 @@ class Engine {
     }
 
     public static config(selector: string, callback: Function) {
+        this._canvasSelector = selector;
         this._config = callback;
     }
 
-    public static assets(assets: {images:[string]}) {
+    public static assets(assets: { images?: [{ name: string, source: string }], sounds?: [{ name: string, source: string }] }) {
         assets.images.forEach(image => {
             let img = new Image();
-            let imgAsset = new ImageAsset(image);
-            img.src = image;
-            imgAsset.image = img;
-            Assets.images.push(imgAsset);
+            img.src = image.source;
+            let spriteAsset = new SpriteAsset(image.name, new Sprite(img));
+            Assets.sprites.push(spriteAsset);
+        });
+
+        assets.sounds.forEach(sound => {
+            let audio = new Audio;
+            audio.src = sound.source;
+            let soundAsset = new SoundAsset(sound.name, new Sound(audio));
+            Assets.sounds.push(soundAsset);
         });
     }
 
@@ -67,6 +74,7 @@ class Engine {
         Engine.invoke();
         Engine.update();
         Engine.destroy();
+        Engine.keyboard();
         Engine.render();
     }
 
@@ -79,16 +87,19 @@ class Engine {
     private static invoke() {
         let remove: Invoke[] = [];
         Engine._invokers.forEach(rep => {
-            if (!rep.firstRun && Time.time - rep.lastCalled >= rep.delay) {
+            if (
+                (!rep.firstRun && Time.time - rep.lastCalled >= rep.delay) ||
+                (!rep.repeats && Time.time - rep.lastCalled >= rep.delay)
+            ) {
                 rep.callback();
                 rep.lastCalled = Time.time;
                 rep.firstRun = true;
-            }else if (Time.time - rep.lastCalled >= rep.interval && rep.repeats) {
+                if (!rep.repeats) {
+                    remove.push(rep);
+                }
+            } else if (Time.time - rep.lastCalled >= rep.interval && rep.repeats) {
                 rep.callback();
                 rep.lastCalled = Time.time
-            }
-            if (!rep.repeats && rep.firstRun) {
-                remove.push(rep);
             }
         });
         var c = Engine._invokers.filter(item => {
@@ -113,6 +124,10 @@ class Engine {
                 }
             }
         }
+    }
+
+    private static keyboard() {
+        Input.clearKeyPress();
     }
 
     private static render() {

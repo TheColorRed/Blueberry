@@ -1,0 +1,5 @@
+{
+  "globalDependencies": {
+    "matter-js": "registry:dt/matter-js#0.10.0+20160830102041"
+  }
+}

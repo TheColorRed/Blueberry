@@ -1,0 +1,8 @@
+{
+  "resolution": "main",
+  "tree": {
+    "src": "https://raw.githubusercontent.com/DefinitelyTyped/DefinitelyTyped/f8da75758ee1233fcd790bb88ce8155af5f22e30/matter-js/matter-js.d.ts",
+    "raw": "registry:dt/matter-js#0.10.0+20160830102041",
+    "typings": "https://raw.githubusercontent.com/DefinitelyTyped/DefinitelyTyped/f8da75758ee1233fcd790bb88ce8155af5f22e30/matter-js/matter-js.d.ts"
+  }
+}

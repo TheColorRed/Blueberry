@@ -8,16 +8,12 @@ class Stage {
 
     private static instance: Stage = null;
 
-    public static create(selector: string = 'body') {
+    public static create(selector: string) {
         let stage = new Stage();
-        // Create the main canvas
-        stage.canvas = document.createElement('canvas') as HTMLCanvasElement;
+        stage.canvas = document.querySelector(selector) as HTMLCanvasElement;
         stage.context = stage.canvas.getContext('2d') as CanvasRenderingContext2D;
-
-        // Place the main canvas on the page
-        let loc = document.querySelector(selector);
-        loc.appendChild(stage.canvas);
         Stage.instance = stage;
+        Stage.fillParent();
     }
 
     public static createBuffer() {
@@ -48,12 +44,12 @@ class Stage {
         Stage.height = y;
     }
 
-    public static maximize() {
-        Stage.width = window.innerWidth;
-        Stage.height = window.innerHeight;
+    public static fillParent() {
+        Stage.width = Stage.instance.canvas.parentElement.clientWidth;
+        Stage.height = Stage.instance.canvas.parentElement.clientHeight;
         window.addEventListener('resize', event => {
-            Stage.width = window.innerWidth;
-            Stage.height = window.innerHeight;
+            Stage.width = Stage.instance.canvas.parentElement.clientWidth;
+            Stage.height = Stage.instance.canvas.parentElement.clientHeight;
         });
     }
 
