@@ -2,7 +2,6 @@
     "compilerOptions": {
         "target": "es6",
         "module": "system",
-        "removeComments": true,
         "outFile": "./dist/blueberry.js",
         "declaration": true,
         "newLine": "LF"

@@ -80,8 +80,13 @@ class Input {
             for (let j = 0; j < InputTypes.items.length; j++) {
                 let input = InputTypes.items[j];
                 if (input.name == value) {
-                    for (let k = 0; k < input.keys.length; k++) {
-                        if (Input.keyPressed(input.keys[k] as number)) {
+                    for (let k = 0; k < input.keys.positive.length; k++) {
+                        if (Input.keyPressed(input.keys.positive[k])) {
+                            return true;
+                        }
+                    }
+                    for (let k = 0; k < input.keys.negative.length; k++) {
+                        if (Input.keyPressed(input.keys.negative[k])) {
                             return true;
                         }
                     }
@@ -97,8 +102,13 @@ class Input {
             for (let j = 0; j < InputTypes.items.length; j++) {
                 let input = InputTypes.items[j];
                 if (input.name == value) {
-                    for (let k = 0; k < input.keys.length; k++) {
-                        if (Input.keyDown(input.keys[k] as number)) {
+                    for (let k = 0; k < input.keys.positive.length; k++) {
+                        if (Input.keyDown(input.keys.positive[k])) {
+                            return true;
+                        }
+                    }
+                    for (let k = 0; k < input.keys.negative.length; k++) {
+                        if (Input.keyDown(input.keys.negative[k])) {
                             return true;
                         }
                     }
@@ -114,8 +124,13 @@ class Input {
             for (let j = 0; j < InputTypes.items.length; j++) {
                 let input = InputTypes.items[j];
                 if (input.name == value) {
-                    for (let k = 0; k < input.keys.length; k++) {
-                        if (Input.keyReleased(input.keys[k] as number)) {
+                    for (let k = 0; k < input.keys.positive.length; k++) {
+                        if (Input.keyReleased(input.keys.positive[k])) {
+                            return true;
+                        }
+                    }
+                    for (let k = 0; k < input.keys.negative.length; k++) {
+                        if (Input.keyReleased(input.keys.negative[k])) {
                             return true;
                         }
                     }
@@ -125,6 +140,83 @@ class Input {
         return false;
     }
 
+    public static getAxis(value: string): number {
+        for (let i = 0; i < this.keys.length; i++) {
+            let key = this.keys[i];
+            for (let j = 0; j < InputTypes.items.length; j++) {
+                let input = InputTypes.items[j];
+                if (input.name == value) {
+                    for (let k = 0; k < input.keys.positive.length; k++) {
+                        if (Input.keyDown(input.keys.positive[k])) {
+                            return 1;
+                        }
+                    }
+                    for (let k = 0; k < input.keys.negative.length; k++) {
+                        if (Input.keyDown(input.keys.negative[k])) {
+                            return -1;
+                        }
+                    }
+                }
+            }
+        }
+        return 0;
+    }
+
+
+    public static addButton(name: string, input: number, isPositive: boolean = true) {
+        let obj: { name: string, keys: { positive?: number[], negative?: number[] } };
+        for (let i = 0; i < InputTypes.items.length; i++) {
+            if (InputTypes.items[i].name == name) {
+                obj = InputTypes.items[i];
+            }
+        }
+        if (obj) {
+            if (isPositive) {
+                obj.keys.positive.push(input);
+            } else {
+                obj.keys.negative.push(input);
+            }
+        } else {
+            if (isPositive) {
+                InputTypes.items.push({
+                    name: name,
+                    keys: { positive: [input] }
+                });
+            } else {
+                InputTypes.items.push({
+                    name: name,
+                    keys: { negative: [input] }
+                });
+            }
+        }
+    }
+    public static setButton(name: string, inputs: number[], isPositive: boolean = true) {
+        let obj: { name: string, keys: { positive?: number[], negative?: number[] } };
+        for (let i = 0; i < InputTypes.items.length; i++) {
+            if (InputTypes.items[i].name == name) {
+                obj = InputTypes.items[i];
+            }
+        }
+        if (obj) {
+            if (isPositive) {
+                obj.keys.positive = inputs;
+            } else {
+                obj.keys.negative = inputs;
+            }
+        } else {
+            if (isPositive) {
+                InputTypes.items.push({
+                    name: name,
+                    keys: { positive: inputs }
+                });
+            } else {
+                InputTypes.items.push({
+                    name: name,
+                    keys: { negative: inputs }
+                });
+            }
+        }
+    }
 }
 
 enum KeyState { None, Pressed, Released };
@@ -138,24 +230,32 @@ class Key {
 
 class InputTypes {
 
-    public static items: { name: string, keys: Keyboard[] }[] = [
+    public static items: {
+        name: string,
+        keys: {
+            positive?: number[],
+            negative?: number[]
+        }
+    }[] = [
         {
             name: 'horizontal',
-            keys: [
-                Keyboard.A, Keyboard.D, Keyboard.LEFT, Keyboard.RIGHT
-            ]
+            keys: {
+                positive: [Keyboard.D, Keyboard.RIGHT],
+                negative: [Keyboard.A, Keyboard.LEFT]
+            }
         },
         {
             name: 'vertical',
-            keys: [
-                Keyboard.W, Keyboard.S, Keyboard.UP, Keyboard.DOWN
-            ]
+            keys: {
+                positive: [Keyboard.S, Keyboard.DOWN],
+                negative: [Keyboard.W, Keyboard.UP]
+            }
         },
         {
             name: 'fire',
-            keys: [
-                Keyboard.SPACE
-            ]
+            keys: {
+                positive: [Keyboard.SPACE]
+            }
         }
     ];
 

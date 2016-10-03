@@ -4,8 +4,8 @@ class Keyboard {
     public static BACK_SPACE: number = 8;
     public static TAB: number = 9;
     public static CLEAR: number = 12;
-    public static RETURN: number = 13;
-    public static ENTER: number = 14;
+    public static ENTER: number = 13;
+    public static RETRURN: number = 14;
     public static SHIFT: number = 16;
     public static CONTROL: number = 17;
     public static ALT: number = 18;
@@ -34,8 +34,9 @@ class Keyboard {
     public static NUM7: number = 55;
     public static NUM8: number = 56;
     public static NUM9: number = 57;
-    public static SEMICOLON: number = 59;
-    public static EQUALS: number = 61;
+    public static DASH: number = 189;
+    public static SEMICOLON: number = 186;
+    public static EQUALS: number = 187;
     public static A: number = 65;
     public static B: number = 66;
     public static C: number = 67;

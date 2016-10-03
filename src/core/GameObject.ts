@@ -45,6 +45,7 @@ class GameObject {
         }
         return null;
     }
+
     public sendMessage(message: string) {
         this._components.forEach(component => {
             if (typeof component[message] == 'function') {

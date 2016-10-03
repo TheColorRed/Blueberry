@@ -20,13 +20,13 @@ class Sound {
         let audio: HTMLAudioElement = this._audio.cloneNode() as HTMLAudioElement;
         audio.play();
         audio.addEventListener('ended', event => {
-            audio.parentNode.removeChild(audio);
+            audio = null;
         });
         return new Sound(audio);
     }
 
     public end() {
-        this._audio.parentNode.removeChild(this._audio);
+        this._audio = null;
     }
 
 }

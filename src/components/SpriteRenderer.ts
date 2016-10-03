@@ -6,6 +6,7 @@ class SpriteRenderer extends Component {
 
     private _currentTime: number = 0;
     private _frames: number = 0;
+    private _frameRow: number = null;
 
     private _isVisible: boolean = true;
 
@@ -34,9 +35,25 @@ class SpriteRenderer extends Component {
 
             if (this._currentTime > duration * Time.deltaTime) {
                 this._currentTime = 0;
-                this.frame = (this.frame + 1) % this._frames;
+                if (this._frameRow == null) {
+                    this.frame = (this.frame + 1) % this._frames;
+                } else {
+                    this.frame++;
+                    if (
+                        this.sprite.sprites[this.frame] ||
+                        this.sprite.sprites[this.frame].row != this._frameRow
+                    ) {
+                        let item = this.sprite.sprites[this.frame - 1];
+                        this.frame = this.sprite.sprites.indexOf(item);
+                    }
+                }
             }
         }
+    }
+
+    public playRow(row: number) {
+        this._frames = this.sprite.framesInRow(row);
+        this._frameRow = row;
     }
 
 }
