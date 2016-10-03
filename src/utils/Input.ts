@@ -1,6 +1,9 @@
 class Input {
 
     public static keys: Key[] = [];
+    public static mouse: Button[] = [];
+
+    public static mousePosition: Vector2 = Vector2.zero;
 
     public static setKeyPressed(value: number) {
         for (let i = 0; i < this.keys.length; i++) {
@@ -34,8 +37,44 @@ class Input {
         }
     }
 
+    public static setMouseReleased(value: number) {
+        for (let i in this.mouse) {
+            let mouse = this.mouse[i];
+            if (mouse.value == value) {
+                mouse.isPressed = false;
+                mouse.isDown = false;
+                mouse.state = MouseState.Released;
+                return;
+            }
+        }
+    }
+
+    public static setMousePressed(value: number) {
+        for (let i in this.mouse) {
+            let mouse = this.mouse[i];
+            if (mouse.value == value && !mouse.isPressed && !mouse.isDown) {
+                mouse.isPressed = true;
+                mouse.isDown = true;
+                mouse.state = MouseState.Pressed;
+            }
+            if (mouse.value == value) {
+                return;
+            }
+        }
+        let mouse = new Button();
+        mouse.isPressed = true;
+        mouse.isDown = true;
+        mouse.state = MouseState.Pressed;
+        mouse.value = value;
+        this.mouse.push(mouse);
+    }
+
+    public static setMousePosition(x: number, y: number) {
+        this.mousePosition = new Vector2(x, y);
+    }
+
     public static clearKeyPress() {
-        for (let i = 0; i < this.keys.length; i++) {
+        for (let i in this.keys) {
             let key = this.keys[i];
             key.isPressed = false;
             if (key.state == KeyState.Released || key.state == KeyState.Pressed) {
@@ -44,8 +83,18 @@ class Input {
         }
     }
 
+    public static clearMousePress() {
+        for (let i in this.mouse) {
+            let mouse = this.mouse[i];
+            mouse.isPressed = false;
+            if (mouse.state == MouseState.Released || mouse.state == MouseState.Pressed) {
+                mouse.state = MouseState.None;
+            }
+        }
+    }
+
     public static keyPressed(value: number) {
-        for (let i = 0; i < this.keys.length; i++) {
+        for (let i in this.keys) {
             let key = this.keys[i];
             if (value == key.value && key.state == KeyState.Pressed) {
                 return true;
@@ -55,7 +104,7 @@ class Input {
     }
 
     public static keyDown(value: number) {
-        for (let i = 0; i < this.keys.length; i++) {
+        for (let i in this.keys) {
             let key = this.keys[i];
             if (value == key.value && key.isDown) {
                 return true;
@@ -65,7 +114,7 @@ class Input {
     }
 
     public static keyReleased(value: number) {
-        for (let i = 0; i < this.keys.length; i++) {
+        for (let i in this.keys) {
             let key = this.keys[i];
             if (value == key.value && key.state == KeyState.Released) {
                 return true;
@@ -74,19 +123,64 @@ class Input {
         return false;
     }
 
+    public static mousePressed(value: number) {
+        for (let i in this.mouse) {
+            let mouse = this.mouse[i];
+            if (value == mouse.value && mouse.state == MouseState.Pressed) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public static mouseDown(value: number) {
+        for (let i in this.mouse) {
+            let mouse = this.mouse[i];
+            if (value == mouse.value && mouse.isDown) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public static mouseReleased(value: number) {
+        for (let i in this.mouse) {
+            let mouse = this.mouse[i];
+            if (value == mouse.value && mouse.state == MouseState.Released) {
+                return true;
+            }
+        }
+        return false;
+    }
+
     public static buttonPressed(value: string): boolean {
-        for (let i = 0; i < this.keys.length; i++) {
-            let key = this.keys[i];
-            for (let j = 0; j < InputTypes.items.length; j++) {
-                let input = InputTypes.items[j];
-                if (input.name == value) {
-                    for (let k = 0; k < input.keys.positive.length; k++) {
+        for (let j in InputTypes.items) {
+            let input = InputTypes.items[j];
+            if (input.name == value) {
+                if (input.keys.positive) {
+                    for (let k in input.keys.positive) {
                         if (Input.keyPressed(input.keys.positive[k])) {
                             return true;
                         }
                     }
-                    for (let k = 0; k < input.keys.negative.length; k++) {
+                }
+                if (input.keys.negative) {
+                    for (let k in input.keys.negative) {
                         if (Input.keyPressed(input.keys.negative[k])) {
+                            return true;
+                        }
+                    }
+                }
+                if (input.mouse.positive) {
+                    for (let k in input.mouse.positive) {
+                        if (Input.mousePressed(input.mouse.positive[k])) {
+                            return true;
+                        }
+                    }
+                }
+                if (input.mouse.negative) {
+                    for (let k in input.mouse.negative) {
+                        if (Input.mousePressed(input.mouse.negative[k])) {
                             return true;
                         }
                     }
@@ -97,18 +191,33 @@ class Input {
     }
 
     public static buttonDown(value: string): boolean {
-        for (let i = 0; i < this.keys.length; i++) {
-            let key = this.keys[i];
-            for (let j = 0; j < InputTypes.items.length; j++) {
-                let input = InputTypes.items[j];
-                if (input.name == value) {
-                    for (let k = 0; k < input.keys.positive.length; k++) {
+        for (let j in InputTypes.items) {
+            let input = InputTypes.items[j];
+            if (input.name == value) {
+                if (input.keys.positive) {
+                    for (let k in input.keys.positive) {
                         if (Input.keyDown(input.keys.positive[k])) {
                             return true;
                         }
                     }
-                    for (let k = 0; k < input.keys.negative.length; k++) {
+                }
+                if (input.keys.negative) {
+                    for (let k in input.keys.negative) {
                         if (Input.keyDown(input.keys.negative[k])) {
+                            return true;
+                        }
+                    }
+                }
+                if (input.mouse.positive) {
+                    for (let k in input.mouse.positive) {
+                        if (Input.mouseDown(input.mouse.positive[k])) {
+                            return true;
+                        }
+                    }
+                }
+                if (input.mouse.negative) {
+                    for (let k in input.mouse.negative) {
+                        if (Input.mouseDown(input.mouse.negative[k])) {
                             return true;
                         }
                     }
@@ -119,18 +228,33 @@ class Input {
     }
 
     public static buttonReleased(value: string): boolean {
-        for (let i = 0; i < this.keys.length; i++) {
-            let key = this.keys[i];
-            for (let j = 0; j < InputTypes.items.length; j++) {
-                let input = InputTypes.items[j];
-                if (input.name == value) {
-                    for (let k = 0; k < input.keys.positive.length; k++) {
+        for (let j in InputTypes.items) {
+            let input = InputTypes.items[j];
+            if (input.name == value) {
+                if (input.keys.positive) {
+                    for (let k in input.keys.positive) {
                         if (Input.keyReleased(input.keys.positive[k])) {
                             return true;
                         }
                     }
-                    for (let k = 0; k < input.keys.negative.length; k++) {
+                }
+                if (input.keys.negative) {
+                    for (let k in input.keys.negative) {
                         if (Input.keyReleased(input.keys.negative[k])) {
+                            return true;
+                        }
+                    }
+                }
+                if (input.mouse.positive) {
+                    for (let k in input.mouse.positive) {
+                        if (Input.mouseReleased(input.mouse.positive[k])) {
+                            return true;
+                        }
+                    }
+                }
+                if (input.mouse.negative) {
+                    for (let k in input.mouse.negative) {
+                        if (Input.mouseReleased(input.mouse.negative[k])) {
                             return true;
                         }
                     }
@@ -141,17 +265,16 @@ class Input {
     }
 
     public static getAxis(value: string): number {
-        for (let i = 0; i < this.keys.length; i++) {
-            let key = this.keys[i];
-            for (let j = 0; j < InputTypes.items.length; j++) {
-                let input = InputTypes.items[j];
-                if (input.name == value) {
-                    for (let k = 0; k < input.keys.positive.length; k++) {
+        for (let j in InputTypes.items) {
+            let input = InputTypes.items[j];
+            if (input.name == value) {
+                if (input.keys) {
+                    for (let k in input.keys.positive) {
                         if (Input.keyDown(input.keys.positive[k])) {
                             return 1;
                         }
                     }
-                    for (let k = 0; k < input.keys.negative.length; k++) {
+                    for (let k in input.keys.negative) {
                         if (Input.keyDown(input.keys.negative[k])) {
                             return -1;
                         }
@@ -162,9 +285,12 @@ class Input {
         return 0;
     }
 
-
-    public static addButton(name: string, input: number, isPositive: boolean = true) {
-        let obj: { name: string, keys: { positive?: number[], negative?: number[] } };
+    public static addButton(name: string, input: { key?: number, mouse?: number }, isPositive: boolean = true) {
+        let obj: {
+            name: string,
+            keys?: { positive?: number[], negative?: number[] },
+            mouse?: { positive?: number[], negative?: number[] }
+        };
         for (let i = 0; i < InputTypes.items.length; i++) {
             if (InputTypes.items[i].name == name) {
                 obj = InputTypes.items[i];
@@ -172,26 +298,42 @@ class Input {
         }
         if (obj) {
             if (isPositive) {
-                obj.keys.positive.push(input);
+                if (input.key) {
+                    obj.keys.positive.push(input.key);
+                }
+                if (input.mouse) {
+                    obj.mouse.positive.push(input.mouse);
+                }
             } else {
-                obj.keys.negative.push(input);
+                if (input.key) {
+                    obj.keys.negative.push(input.key);
+                }
+                if (input.mouse) {
+                    obj.mouse.negative.push(input.mouse);
+                }
             }
         } else {
             if (isPositive) {
                 InputTypes.items.push({
                     name: name,
-                    keys: { positive: [input] }
+                    keys: { positive: [input.key] },
+                    mouse: { negative: [input.mouse] }
                 });
             } else {
                 InputTypes.items.push({
                     name: name,
-                    keys: { negative: [input] }
+                    keys: { negative: [input.key] },
+                    mouse: { negative: [input.mouse] }
                 });
             }
         }
     }
-    public static setButton(name: string, inputs: number[], isPositive: boolean = true) {
-        let obj: { name: string, keys: { positive?: number[], negative?: number[] } };
+    public static setButton(name: string, input: { keys?: number[], mouse?: number[] }, isPositive: boolean = true) {
+        let obj: {
+            name: string,
+            keys?: { positive?: number[], negative?: number[] },
+            mouse?: { positive?: number[], negative?: number[] }
+        };
         for (let i = 0; i < InputTypes.items.length; i++) {
             if (InputTypes.items[i].name == name) {
                 obj = InputTypes.items[i];
@@ -199,20 +341,32 @@ class Input {
         }
         if (obj) {
             if (isPositive) {
-                obj.keys.positive = inputs;
+                if (input.keys) {
+                    obj.keys.positive = input.keys;
+                }
+                if (input.mouse) {
+                    obj.mouse.positive = input.mouse;
+                }
             } else {
-                obj.keys.negative = inputs;
+                if (input.keys) {
+                    obj.keys.negative = input.keys;
+                }
+                if (input.mouse) {
+                    obj.mouse.negative = input.mouse;
+                }
             }
         } else {
             if (isPositive) {
                 InputTypes.items.push({
                     name: name,
-                    keys: { positive: inputs }
+                    keys: { positive: input.keys },
+                    mouse: { positive: input.mouse }
                 });
             } else {
                 InputTypes.items.push({
                     name: name,
-                    keys: { negative: inputs }
+                    keys: { negative: input.keys },
+                    mouse: { negative: input.mouse }
                 });
             }
         }
@@ -220,6 +374,7 @@ class Input {
 }
 
 enum KeyState { None, Pressed, Released };
+enum MouseState { None, Pressed, Released };
 
 class Key {
     public value: number;
@@ -228,11 +383,22 @@ class Key {
     public state: KeyState = KeyState.None;
 }
 
+class Button {
+    public value: number;
+    public isPressed: boolean = false;
+    public isDown: boolean = false;
+    public state: MouseState = MouseState.None;
+}
+
 class InputTypes {
 
     public static items: {
         name: string,
-        keys: {
+        keys?: {
+            positive?: number[],
+            negative?: number[]
+        },
+        mouse?: {
             positive?: number[],
             negative?: number[]
         }
@@ -255,6 +421,9 @@ class InputTypes {
             name: 'fire',
             keys: {
                 positive: [Keyboard.SPACE]
+            },
+            mouse: {
+                positive: [Mouse.LEFT]
             }
         }
     ];

@@ -4,9 +4,12 @@ class GameObject {
     private _started: boolean = false;
     private _components: Component[] = [];
     private _transform: Transform;
+    private _isActive: boolean = true;
+    private name: string;
 
     public constructor(name: string = 'GameObject') {
         this._transform = this.addComponent(Transform);
+        this.name = name;
         Engine.addGameObject(this);
     }
 
@@ -46,7 +49,22 @@ class GameObject {
         return null;
     }
 
+    public static getByName(name: string): GameObject {
+        for (let i in Engine.gameObjects) {
+            let obj = Engine.gameObjects[i];
+            if (obj.name == name) {
+                return obj;
+            }
+        }
+        return null;
+    }
+
+    public setActive(active: boolean): void {
+        this._isActive = active;
+    }
+
     public sendMessage(message: string) {
+        if (!this._isActive) { return; }
         this._components.forEach(component => {
             if (typeof component[message] == 'function') {
                 if (message == 'start') {

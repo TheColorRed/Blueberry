@@ -14,6 +14,12 @@ class Stage {
         stage.context = stage.canvas.getContext('2d') as CanvasRenderingContext2D;
         Stage.instance = stage;
         Stage.fillParent();
+        stage.canvas.addEventListener('mousemove', event => {
+            Input.setMousePosition(event.offsetX, event.offsetY);
+        });
+        stage.canvas.addEventListener('contextmenu', event => {
+            event.preventDefault();
+        })
     }
 
     public static createBuffer() {
@@ -42,6 +48,67 @@ class Stage {
     public static size(x: number, y: number) {
         Stage.width = x;
         Stage.height = y;
+    }
+
+    public static get topLeftCorner(): Vector2 {
+        return new Vector2(0, 0);
+    }
+
+    public static get topRightCorner(): Vector2 {
+        return new Vector2(Stage.width, 0);
+    }
+
+    public static get bottomLeftCorner(): Vector2 {
+        return new Vector2(0, Stage.height);
+    }
+
+    public static get bottomRightCorner(): Vector2 {
+        return new Vector2(Stage.width, Stage.height);
+    }
+
+    public static get center(): Vector2 {
+        return new Vector2(Stage.width, Stage.height).dividedBy(2);
+    }
+
+    public static get topCenter(): Vector2 {
+        return new Vector2(Stage.width / 2, 0);
+    }
+
+    public static get bottomCenter(): Vector2 {
+        return new Vector2(Stage.width / 2, Stage.height);
+    }
+
+    public static get leftMiddle(): Vector2 {
+        return new Vector2(0, Stage.height / 2);
+    }
+
+    public static get topLeftQuad(): Vector2 {
+        return new Vector2(Stage.width / 4, Stage.height / 4);
+    }
+
+    public static get topRightQuad(): Vector2 {
+        return new Vector2(
+            (Stage.width / 2) + (Stage.width / 4),
+            (Stage.height / 2) - (Stage.height / 4)
+        );
+    }
+
+    public static get bottomLeftQuad(): Vector2 {
+        return new Vector2(
+            (Stage.width / 2) - (Stage.width / 4),
+            (Stage.height / 2) + (Stage.height / 4)
+        );
+    }
+
+    public static get bottomRightQuad(): Vector2 {
+        return new Vector2(
+            (Stage.width / 2) + (Stage.width / 4),
+            (Stage.height / 2) + (Stage.height / 4)
+        );
+    }
+
+    public static get rightMiddle(): Vector2 {
+        return new Vector2(Stage.width, Stage.height / 2);
     }
 
     public static fillParent() {
@@ -92,28 +159,25 @@ class Stage {
             let item = gameObjects[i];
             for (let j = 0; j < item.components.length; j++){
                 let comp = item.components[j];
-                if (comp instanceof SpriteRenderer && comp.sprite.image && comp.isVisible) {
-                    if (comp.sprite.frames == 0) {
-                        Stage.drawToBuffer(
-                            comp.sprite.image,
-                            item.transform.position.x,
-                            item.transform.position.y
-                        );
-                    } else {
-                        let sprite = comp.sprite.item(comp.frame);
-                        Stage.drawToBuffer(
-                            // Source Image
-                            comp.sprite.image,
-                            // Position in the sprite sheet
-                            sprite.left, sprite.top,
-                            sprite.width, sprite.height,
-                            // Position on the canvas
-                            item.transform.position.x,
-                            item.transform.position.y,
-                            // Size on the canvas
-                            sprite.width, sprite.height
-                        );
-                    }
+                if (
+                    comp instanceof SpriteRenderer &&
+                    comp.sprite.image && comp.isVisible &&
+                    comp['started']
+                ) {
+                    let sprite: SubSprite = comp.drawableSprite();
+                    let origin: Vector2 = comp.sprite.getOrigin();
+                    Stage.drawToBuffer(
+                        // Source Image
+                        comp.sprite.image,
+                        // Position in the sprite sheet
+                        sprite.left, sprite.top,
+                        sprite.width, sprite.height,
+                        // Position on the canvas
+                        item.transform.position.x - origin.x,
+                        item.transform.position.y - origin.y,
+                        // Size on the canvas
+                        sprite.width, sprite.height
+                    );
                 }
             }
         }

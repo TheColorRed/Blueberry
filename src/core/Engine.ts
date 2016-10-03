@@ -9,40 +9,70 @@ class Engine {
     private static _startTime: number = new Date().getTime();
     private static _gameObjects: GameObject[] = [];
     private static _invokers: Invoke[] = [];
-    private static _ready: Function;
-    private static _config: Function;
+    private static _run: Function;
+    private static _setup: Function;
     private static _canvasSelector: string = 'body';
+    private static _assetCount = 0;
+    private static _assetsLoaded = 0;
 
-    public static ready(callback: Function) {
-        this._ready = callback;
+    public static get gameObjects(): GameObject[] {
+        return Engine._gameObjects;
     }
 
-    public static config(selector: string, callback: Function) {
+    public static setup(selector: string, callback: Function) {
         this._canvasSelector = selector;
-        this._config = callback;
+        this._setup = callback;
+    }
+
+    public static run(callback: Function) {
+        this._run = callback;
     }
 
     public static assets(assets: { images?: [{ name: string, source: string }], sounds?: [{ name: string, source: string }] }) {
-        assets.images.forEach(image => {
-            let img = new Image();
-            img.src = image.source;
-            let spriteAsset = new SpriteAsset(image.name, new Sprite(img));
-            Assets.sprites.push(spriteAsset);
-        });
-
-        assets.sounds.forEach(sound => {
-            let audio = new Audio;
-            audio.src = sound.source;
-            let soundAsset = new SoundAsset(sound.name, new Sound(audio));
-            Assets.sounds.push(soundAsset);
-        });
+        let assetCount = 0;
+        if (assets.images) {
+            assetCount += assets.images.length;
+            assets.images.forEach(image => {
+                let img = new Image();
+                img.src = image.source;
+                img.addEventListener('load', () => {
+                    let spriteAsset = new SpriteAsset(image.name, new Sprite(img));
+                    Assets.sprites.push(spriteAsset);
+                    this._assetsLoaded++;
+                    this.assetsLoaded();
+                });
+            });
+        }
+        if (assets.sounds) {
+            assetCount += assets.sounds.length;
+            assets.sounds.forEach(sound => {
+                let audio = new Audio;
+                audio.src = sound.source;
+                audio.addEventListener('load', () => {
+                    let soundAsset = new SoundAsset(sound.name, new Sound(audio));
+                    Assets.sounds.push(soundAsset);
+                    this._assetsLoaded++;
+                    this.assetsLoaded();
+                });
+            });
+        }
+        this._assetCount = assetCount;
     }
 
-    public init() {
+    private static assetsLoaded() {
+        if (this._assetCount == this._assetsLoaded) {
+            window.dispatchEvent(new CustomEvent('onAssetsLoaded'));
+        }
+    }
+
+    public loadConfig() {
         Stage.create(Engine._canvasSelector);
-        Engine._config();
+        Engine._setup();
         Stage.createBuffer();
-        Engine._ready();
+    }
+
+    public start() {
+        Engine._run();
         Engine.tick();
     }
 
@@ -75,6 +105,7 @@ class Engine {
         Engine.update();
         Engine.destroy();
         Engine.keyboard();
+        Engine.mouse();
         Engine.render();
     }
 
@@ -128,6 +159,10 @@ class Engine {
 
     private static keyboard() {
         Input.clearKeyPress();
+    }
+
+    private static mouse() {
+        Input.clearMousePress();
     }
 
     private static render() {
