@@ -27,7 +27,6 @@ class Transform extends Component {
         this._motionSet = true;
     }
 
-
     update() {
         if (this._motionSet) {
             this.translate(new Vector2(

@@ -45,10 +45,6 @@ function cancelInvoke(invoke: Invoke): boolean {
     return false;
 }
 
-interface GameObjectType<T extends Prefab> {
-    new(): T;
-}
-
 /**
  * Creates a new instance of a Prefab or GameObject
  *
@@ -58,9 +54,14 @@ interface GameObjectType<T extends Prefab> {
  * @param {Rotation} [rotation] The rotation at creation
  * @returns {GameObject}
  */
-function instantiate<T extends Prefab>(object: GameObjectType<T>, position?: Vector2, rotation?: Rotation): GameObject {
-    let g = new object() as T;
-    let obj = g.init();
+function instantiate<T extends Prefab>(object: GameObjectType<T> | GameObject, position?: Vector2, rotation?: Rotation): GameObject {
+    let obj: GameObject;
+    if (object instanceof GameObject) {
+        obj = Obj.clone(object) as GameObject;
+    } else {
+        let g = new object() as T;
+        obj = g.init();
+    }
     if (!position) { position = Vector2.zero; }
     if (!rotation) { rotation = Rotation.left; }
     obj.transform.position = position;
@@ -74,13 +75,13 @@ function instantiate<T extends Prefab>(object: GameObjectType<T>, position?: Vec
  * @param {GameObject} gameObject The GameObject to be destroyed
  * @param {number} [delay=0] How long to wait until it gets deleted
  */
-function destroy(gameObject: GameObject, delay: number = 0): void {
+function destroy(object: GameObject | Component, delay: number = 0): void {
     if (delay <= 0) {
-        gameObject.destroy();
+        object.destroy();
         return;
     }
     invoke(function () {
-        gameObject.destroy();
+        object.destroy();
     }, delay);
 }
 

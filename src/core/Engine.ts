@@ -28,15 +28,16 @@ class Engine {
         this._run = callback;
     }
 
-    public static assets(assets: { images?: [{ name: string, source: string }], sounds?: [{ name: string, source: string }] }) {
+    public static assets(assets: { sprites?: [{ name: string, source: string }], sounds?: [{ name: string, source: string }] }) {
         let assetCount = 0;
-        if (assets.images) {
-            assetCount += assets.images.length;
-            assets.images.forEach(image => {
+        let root: string = window.location.pathname.substring(0, window.location.pathname.lastIndexOf('/')) + '/assets/';
+        if (assets.sprites) {
+            assetCount += assets.sprites.length;
+            assets.sprites.forEach(sprite => {
                 let img = new Image();
-                img.src = image.source;
+                img.src = (root + sprite.source).replace(/\/\/+/g, '/');
                 img.addEventListener('load', () => {
-                    let spriteAsset = new SpriteAsset(image.name, new Sprite(img));
+                    let spriteAsset = new SpriteAsset(sprite.name, new Sprite(img));
                     Assets.sprites.push(spriteAsset);
                     this._assetsLoaded++;
                     this.assetsLoaded();
@@ -47,8 +48,8 @@ class Engine {
             assetCount += assets.sounds.length;
             assets.sounds.forEach(sound => {
                 let audio = new Audio;
-                audio.src = sound.source;
-                audio.addEventListener('load', () => {
+                audio.src = (root + sound.source).replace(/\/\/+/g, '/');
+                audio.addEventListener('loadeddata', () => {
                     let soundAsset = new SoundAsset(sound.name, new Sound(audio));
                     Assets.sounds.push(soundAsset);
                     this._assetsLoaded++;
@@ -103,9 +104,9 @@ class Engine {
         Engine.start();
         Engine.invoke();
         Engine.update();
-        Engine.destroy();
         Engine.keyboard();
         Engine.mouse();
+        Engine.destroy();
         Engine.render();
     }
 
@@ -152,6 +153,14 @@ class Engine {
                 if (go['_destroy']) {
                     let index = Engine._gameObjects.indexOf(go);
                     Engine._gameObjects.splice(index, 1);
+                    continue;
+                }
+                for (let i = go.components.length - 1; i > -1; i--) {
+                    let comp = go.components[i];
+                    if (comp['_destroy']) {
+                        let idx = go.components.indexOf(comp);
+                        go.components.splice(idx);
+                    }
                 }
             }
         }

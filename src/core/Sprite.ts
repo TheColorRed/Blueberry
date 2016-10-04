@@ -60,21 +60,21 @@ class Sprite {
         return this._sprites;
     }
 
-    public getRow(row: number): SubSprite[] {
-        let sprites: SubSprite[] =[];
+    public getRow(row: number): number[] {
+        let sprites: number[] =[];
         this._sprites.forEach(sprite => {
             if (sprite.row == row) {
-                sprites.push(sprite);
+                sprites.push(sprite.frame);
             }
         });
         return sprites;
     }
 
-    public getCol(col: number): SubSprite[] {
-        let sprites: SubSprite[] =[];
+    public getCol(col: number): number[] {
+        let sprites: number[] =[];
         this._sprites.forEach(sprite => {
             if (sprite.col == col) {
-                sprites.push(sprite);
+                sprites.push(sprite.frame);
             }
         });
         return sprites;

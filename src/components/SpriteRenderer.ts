@@ -7,9 +7,8 @@ class SpriteRenderer extends Component {
     private _currentTime: number = 0;
     private _frames: number = 1;
     private _sprites: SubSprite[] = [];
-    private _frameRow: number = null;
-    private _frameCol: number = null;
 
+    private _frameList: number[] = [];
     private _isVisible: boolean = true;
 
     public get isVisible() {
@@ -43,6 +42,10 @@ class SpriteRenderer extends Component {
         }
     }
 
+    public set duration(speed: number) {
+        this.sprite.duration = speed;
+    }
+
     /**
      * Get the current sprite to draw.
      *
@@ -64,8 +67,7 @@ class SpriteRenderer extends Component {
         let sprites: SubSprite[] = this.sprite.sprites;
         this._frames = sprites.length;
         this._sprites = sprites;
-        this._frameRow = null;
-        this._frameCol = null;
+        this._frameList = [];
     }
 
     /**
@@ -76,13 +78,7 @@ class SpriteRenderer extends Component {
      * @memberOf SpriteRenderer
      */
     public playRow(row: number): void {
-        if (this._frameRow != row) {
-            let sprites: SubSprite[] = this.sprite.getRow(row);
-            this._frames = sprites.length;
-            this._sprites = sprites;
-            this._frameRow = row;
-            this._frameCol = null;
-        }
+        this['playFrames'].apply(this, this.sprite.getRow(row));
     }
 
     /**
@@ -93,13 +89,7 @@ class SpriteRenderer extends Component {
      * @memberOf SpriteRenderer
      */
     public playCol(col: number): void {
-        if (this._frameCol != col) {
-            let sprites: SubSprite[] = this.sprite.getCol(col);
-            this._frames = sprites.length;
-            this._sprites = sprites;
-            this._frameCol = col;
-            this._frameRow = null;
-        }
+        this['playFrames'].apply(this, this.sprite.getCol(col));
     }
 
     /**
@@ -110,19 +100,51 @@ class SpriteRenderer extends Component {
      * @memberOf SpriteRenderer
      */
     public playFrames(...frames: number[]): void {
-        let sprites: SubSprite[] = [];
-        for (let i in this.sprite.sprites) {
-            let sprite = this.sprite.sprites[i];
-            for (let j in frames) {
-                if (sprite.frame == frames[j]) {
+        if (!this.isSame(this._frameList, frames)) {
+            let sprites: SubSprite[] = [];
+            for (let i in frames) {
+                let sprite = this.getFrame(frames[i]);
+                if (sprite) {
                     sprites.push(sprite);
                 }
             }
+            this.resetFrame();
+            this._frames = sprites.length;
+            this._frameList = frames;
+            this._sprites = sprites;
         }
-        this._frames = sprites.length;
-        this._sprites = sprites;
-        this._frameRow = null;
-        this._frameCol = null;
+    }
+
+    public playRange(start: number, end: number) {
+        let frames: number[] = [];
+        if (start < end) {
+            for (var i = start; i <= end; i++) {
+                frames.push(i);
+            }
+        } else {
+            for (var i = end; i >= start; i--) {
+                frames.push(i);
+            }
+        }
+        this['playFrames'].apply(this, frames);
+    }
+
+    private getFrame(frame): SubSprite {
+        for (let i in this.sprite.sprites) {
+            let sprite = this.sprite.sprites[i];
+            if (sprite.frame == frame) {
+                return sprite;
+            }
+        }
+        return null;
+    }
+
+    private resetFrame() {
+        this.frame = 0;
+    }
+
+    private isSame(arr1, arr2) {
+        return (JSON.stringify(arr1) === JSON.stringify(arr2));
     }
 
 }

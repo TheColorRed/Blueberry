@@ -19,6 +19,7 @@
         "src/utils/functions.ts",
         "typings/index.d.ts",
         // Load the core
+        "src/core/Obj.ts",
         "src/core/Component.ts",
         "src/core/GameObject.ts",
         "src/core/Sprite.ts",
@@ -27,9 +28,11 @@
         "src/core/Assets.ts",
         "src/core/Engine.ts",
         "src/core/Prefab.ts",
+        "src/core/Types.ts",
         // Load the componenets
         "src/components/SpriteRenderer.ts",
         "src/components/Transform.ts",
+        "src/components/ScreenWarp.ts",
         // Load the entry point
         "src/main.ts"
     ]
