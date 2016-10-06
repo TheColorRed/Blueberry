@@ -1,9 +1,9 @@
 class Rotation {
 
-    public angle: number = 0;
+    public degrees: number = 0;
 
-    public constructor(angle: number = 0) {
-        this.angle = angle;
+    public constructor(degrees: number = 0) {
+        this.degrees = degrees;
     }
 
     public static get up(): Rotation {

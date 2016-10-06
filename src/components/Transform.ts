@@ -8,10 +8,45 @@ class Transform extends Component {
     private _speed: number = null;
     private _motionSet: boolean = false;
 
+    public get forward(): Vector2 {
+        return new Vector2(
+            Math.cos(this.rotation.degrees * (Math.PI / 180)),
+            Math.sin(this.rotation.degrees * (Math.PI / 180))
+        );
+    }
+
+    public get backward(): Vector2 {
+        return new Vector2(
+            -Math.cos(this.rotation.degrees * (Math.PI / 180)),
+            -Math.sin(this.rotation.degrees * (Math.PI / 180))
+        );
+    }
+
+    public get up(): Vector2 {
+        return new Vector2(
+            -Math.cos(this.rotation.degrees * (Math.PI / 180)),
+            Math.sin(this.rotation.degrees * (Math.PI / 180))
+        );
+    }
+
+    public get down(): Vector2 {
+        return new Vector2(
+            Math.cos(this.rotation.degrees * (Math.PI / 180)),
+            -Math.sin(this.rotation.degrees * (Math.PI / 180))
+        );
+    }
+
     public translate(translation: Vector2): void {
         this.position = new Vector2(
             this.position.x + translation.x,
             this.position.y + translation.y
+        );
+    }
+
+    public lookAt(target: Vector2): void {
+        this.rotation.degrees = Vector2.degrees(
+            this.position,
+            target
         );
     }
 
@@ -20,7 +55,7 @@ class Transform extends Component {
         if (typeof target == 'number') {
             dir = target;
         } else {
-            dir = Vector2.angle(this.position, target);
+            dir = Vector2.degrees(this.position, target);
         }
         this._dir = dir;
         this._speed = speed;

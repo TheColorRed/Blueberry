@@ -15,7 +15,7 @@ class Vector2 {
         return Math.abs(dist);
     }
 
-    public static angle(a: Vector2, b: Vector2): number {
+    public static degrees(a: Vector2, b: Vector2): number {
         return Math.atan2(b.y - a.y, b.x - a.x) * 180 / Math.PI;
     }
 
@@ -39,7 +39,7 @@ class Vector2 {
         return v;
     }
 
-    public plus(amount: number): Vector2 {
+    public plus(amount: number, direction?: string): Vector2 {
         let x = this._x + amount;
         let y = this._y + amount;
         let v = new Vector2(x, y);

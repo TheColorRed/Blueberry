@@ -6,7 +6,7 @@ class Stage {
     private _canvasBuffer: HTMLCanvasElement;
     private _contextBuffer: CanvasRenderingContext2D;
 
-    private static instance: Stage = null;
+    public static instance: Stage = null;
 
     public static create(selector: string) {
         let stage = new Stage();
@@ -131,14 +131,23 @@ class Stage {
         );
     }
 
-    public static drawToBuffer(image: HTMLImageElement | HTMLCanvasElement | HTMLVideoElement, offsetX: number, offsetY: number, width?: number, height?: number, canvasOffsetX?: number, canvasOffsetY?: number, canvasImageWidth?: number, canvasImageHeight?: number) {
-        Stage.instance._contextBuffer.drawImage(
+    public static drawToBuffer(transform: Transform, spr: SpriteRenderer, image: HTMLImageElement | HTMLCanvasElement | HTMLVideoElement, offsetX: number, offsetY: number, width?: number, height?: number, canvasOffsetX?: number, canvasOffsetY?: number, canvasImageWidth?: number, canvasImageHeight?: number) {
+        let ctx = Stage.instance._contextBuffer;
+        ctx.save();
+        ctx.translate(transform.position.x, transform.position.y);
+        ctx.rotate(transform.rotation.degrees * (Math.PI / 180));
+        if (transform.gameObject.tag == 'bullet') {
+            console.log(transform.rotation.degrees);
+        }
+        ctx.drawImage(
             image,
             Math.round(offsetX), Math.round(offsetY),
             Math.round(width), Math.round(height),
-            Math.round(canvasOffsetX), Math.round(canvasOffsetY),
+            // Math.round(canvasOffsetX), Math.round(canvasOffsetY),
+            Math.round(-(spr.sprite.width / 2)), Math.round(-(spr.sprite.height / 2)),
             Math.round(canvasImageWidth), Math.round(canvasImageHeight)
         );
+        ctx.restore();
     }
 
     public static render(gameObjects: GameObject[]) {
@@ -155,9 +164,9 @@ class Stage {
                 return 0;
             });
         }
-        for (let i = 0; i < gameObjects.length; i++){
+        for (let i = 0; i < gameObjects.length; i++) {
             let item = gameObjects[i];
-            for (let j = 0; j < item.components.length; j++){
+            for (let j = 0; j < item.components.length; j++) {
                 let comp = item.components[j];
                 if (
                     comp instanceof SpriteRenderer &&
@@ -167,6 +176,7 @@ class Stage {
                     let sprite: SubSprite = comp.drawableSprite();
                     let origin: Vector2 = comp.sprite.getOrigin();
                     Stage.drawToBuffer(
+                        item.transform, comp,
                         // Source Image
                         comp.sprite.image,
                         // Position in the sprite sheet
@@ -178,6 +188,12 @@ class Stage {
                         // Size on the canvas
                         sprite.width, sprite.height
                     );
+                    if (Debug.enabled) {
+                        let collider = comp.getComponent(Collider);
+                        // Draw debugging information
+                        Debug.drawOrigin(item);
+                        Debug.drawCollider(item);
+                    }
                 }
             }
         }

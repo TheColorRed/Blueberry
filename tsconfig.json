@@ -8,6 +8,7 @@
     },
     "files": [
         // Load any utilites
+        "src/utils/Debug.ts",
         "src/utils/Time.ts",
         "src/utils/Vector2.ts",
         "src/utils/Rotation.ts",
@@ -33,6 +34,7 @@
         "src/components/SpriteRenderer.ts",
         "src/components/Transform.ts",
         "src/components/ScreenWarp.ts",
+        "src/components/Collider.ts",
         // Load the entry point
         "src/main.ts"
     ]

@@ -62,8 +62,8 @@ function instantiate<T extends Prefab>(object: GameObjectType<T> | GameObject, p
         let g = new object() as T;
         obj = g.init();
     }
-    if (!position) { position = Vector2.zero; }
-    if (!rotation) { rotation = Rotation.left; }
+    if (!position) { position = obj.transform.position; }
+    if (!rotation) { rotation = obj.transform.rotation; }
     obj.transform.position = position;
     obj.transform.rotation = rotation;
     return obj;

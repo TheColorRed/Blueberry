@@ -1,7 +1,7 @@
 class Component extends Obj {
 
-    protected gameObject: GameObject;
-    protected transform: Transform;
+    public gameObject: GameObject;
+    public transform: Transform;
     protected started: boolean = false;
 
     public getComponent<T extends Component>(comp: ComponentType<T>): T {

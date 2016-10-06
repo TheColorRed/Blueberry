@@ -5,6 +5,8 @@ class GameObject extends Obj {
     private _transform: Transform;
     private _isActive: boolean = true;
 
+    public tag: string = '';
+
     public constructor(name: string = 'GameObject') {
         super();
         this._transform = this.addComponent(Transform);
@@ -22,8 +24,8 @@ class GameObject extends Obj {
 
     public addComponent<T extends Component>(type: ComponentType<T>): T {
         let c = new type() as T;
-        c['gameObject'] = this;
-        c['transform'] = this._transform;
+        c.gameObject = this;
+        c.transform = this._transform;
         this._components.push(c);
         return c;
     }
@@ -58,7 +60,7 @@ class GameObject extends Obj {
         this._isActive = isActive;
     }
 
-    public sendMessage(message: string) {
+    public sendMessage(message: string, ...options: any[]) {
         if (!this._isActive) { return; }
         this._components.forEach(component => {
             if (typeof component[message] == 'function') {
@@ -66,7 +68,7 @@ class GameObject extends Obj {
                     if (component['started']) { return; }
                     component['started'] = true;
                 }
-                component[message]();
+                component[message].apply(component, options);
             }
         });
     }
