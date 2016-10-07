@@ -3,8 +3,8 @@ class Stage {
     public canvas: HTMLCanvasElement;
     public context: CanvasRenderingContext2D;
 
-    private _canvasBuffer: HTMLCanvasElement;
-    private _contextBuffer: CanvasRenderingContext2D;
+    // private _canvasBuffer: HTMLCanvasElement;
+    // private _contextBuffer: CanvasRenderingContext2D;
 
     public static instance: Stage = null;
 
@@ -22,12 +22,12 @@ class Stage {
         })
     }
 
-    public static createBuffer() {
-        Stage.instance._canvasBuffer = document.createElement('canvas') as HTMLCanvasElement;
-        Stage.instance._canvasBuffer.width = Stage.instance.canvas.width;
-        Stage.instance._canvasBuffer.height = Stage.instance.canvas.height;
-        Stage.instance._contextBuffer = Stage.instance._canvasBuffer.getContext('2d') as CanvasRenderingContext2D;
-    }
+    // public static createBuffer() {
+    //     Stage.instance._canvasBuffer = document.createElement('canvas') as HTMLCanvasElement;
+    //     Stage.instance._canvasBuffer.width = Stage.instance.canvas.width;
+    //     Stage.instance._canvasBuffer.height = Stage.instance.canvas.height;
+    //     Stage.instance._contextBuffer = Stage.instance._canvasBuffer.getContext('2d') as CanvasRenderingContext2D;
+    // }
 
     public static get width(): number {
         return Stage.instance.canvas.width;
@@ -120,25 +120,26 @@ class Stage {
         });
     }
 
-    public static clearBuffer() {
-        Stage.instance._canvasBuffer.width = Stage.instance._canvasBuffer.width;
-    }
+    // public static clearBuffer() {
+    //     Stage.instance._canvasBuffer.width = Stage.instance._canvasBuffer.width;
+    // }
 
-    public static draw() {
+    // public static draw() {
+    //     Stage.instance.canvas.width = Stage.instance.canvas.width;
+    //     Stage.instance.context.drawImage(
+    //         Stage.instance._canvasBuffer, 0, 0
+    //     );
+    // }
+
+    public static clear() {
         Stage.instance.canvas.width = Stage.instance.canvas.width;
-        Stage.instance.context.drawImage(
-            Stage.instance._canvasBuffer, 0, 0
-        );
     }
 
-    public static drawToBuffer(transform: Transform, spr: SpriteRenderer, image: HTMLImageElement | HTMLCanvasElement | HTMLVideoElement, offsetX: number, offsetY: number, width?: number, height?: number, canvasOffsetX?: number, canvasOffsetY?: number, canvasImageWidth?: number, canvasImageHeight?: number) {
-        let ctx = Stage.instance._contextBuffer;
+    public static draw(transform: Transform, spr: SpriteRenderer, image: HTMLImageElement | HTMLCanvasElement | HTMLVideoElement, offsetX: number, offsetY: number, width?: number, height?: number, canvasOffsetX?: number, canvasOffsetY?: number, canvasImageWidth?: number, canvasImageHeight?: number) {
+        let ctx = Stage.instance.context;
         ctx.save();
         ctx.translate(transform.position.x, transform.position.y);
         ctx.rotate(transform.rotation.degrees * (Math.PI / 180));
-        if (transform.gameObject.tag == 'bullet') {
-            console.log(transform.rotation.degrees);
-        }
         ctx.drawImage(
             image,
             Math.round(offsetX), Math.round(offsetY),
@@ -164,9 +165,11 @@ class Stage {
                 return 0;
             });
         }
-        for (let i = 0; i < gameObjects.length; i++) {
+        let i = gameObjects.length;
+        while (i--) {
             let item = gameObjects[i];
-            for (let j = 0; j < item.components.length; j++) {
+            let j = item.components.length;
+            while(j--){
                 let comp = item.components[j];
                 if (
                     comp instanceof SpriteRenderer &&
@@ -175,7 +178,7 @@ class Stage {
                 ) {
                     let sprite: SubSprite = comp.drawableSprite();
                     let origin: Vector2 = comp.sprite.getOrigin();
-                    Stage.drawToBuffer(
+                    Stage.draw(
                         item.transform, comp,
                         // Source Image
                         comp.sprite.image,

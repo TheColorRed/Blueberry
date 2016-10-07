@@ -6,7 +6,8 @@ class Input {
     public static mousePosition: Vector2 = Vector2.zero;
 
     public static setKeyPressed(value: number) {
-        for (let i = 0; i < this.keys.length; i++) {
+        let i = this.keys.length;
+        while (i--) {
             let key = this.keys[i];
             if (key.value == value && !key.isPressed && !key.isDown) {
                 key.isPressed = true;
@@ -26,7 +27,8 @@ class Input {
     }
 
     public static setKeyReleased(value: number) {
-        for (let i = 0; i < this.keys.length; i++) {
+        let i = this.keys.length;
+        while (i--) {
             let key = this.keys[i];
             if (key.value == value) {
                 key.isPressed = false;
@@ -38,7 +40,8 @@ class Input {
     }
 
     public static setMouseReleased(value: number) {
-        for (let i in this.mouse) {
+        let i = this.mouse.length;
+        while (i--) {
             let mouse = this.mouse[i];
             if (mouse.value == value) {
                 mouse.isPressed = false;
@@ -50,7 +53,8 @@ class Input {
     }
 
     public static setMousePressed(value: number) {
-        for (let i in this.mouse) {
+        let i = this.mouse.length;
+        while (i--) {
             let mouse = this.mouse[i];
             if (mouse.value == value && !mouse.isPressed && !mouse.isDown) {
                 mouse.isPressed = true;
@@ -74,7 +78,8 @@ class Input {
     }
 
     public static clearKeyPress() {
-        for (let i in this.keys) {
+        let i = this.keys.length;
+        while (i--) {
             let key = this.keys[i];
             key.isPressed = false;
             if (key.state == KeyState.Released || key.state == KeyState.Pressed) {
@@ -84,7 +89,8 @@ class Input {
     }
 
     public static clearMousePress() {
-        for (let i in this.mouse) {
+        let i = this.mouse.length;
+        while (i--) {
             let mouse = this.mouse[i];
             mouse.isPressed = false;
             if (mouse.state == MouseState.Released || mouse.state == MouseState.Pressed) {
@@ -94,7 +100,8 @@ class Input {
     }
 
     public static keyPressed(value: number) {
-        for (let i in this.keys) {
+        let i = this.keys.length;
+        while (i--) {
             let key = this.keys[i];
             if (value == key.value && key.state == KeyState.Pressed) {
                 return true;
@@ -104,7 +111,8 @@ class Input {
     }
 
     public static keyDown(value: number) {
-        for (let i in this.keys) {
+        let i = this.keys.length;
+        while (i--) {
             let key = this.keys[i];
             if (value == key.value && key.isDown) {
                 return true;
@@ -114,7 +122,8 @@ class Input {
     }
 
     public static keyReleased(value: number) {
-        for (let i in this.keys) {
+        let i = this.keys.length;
+        while (i--) {
             let key = this.keys[i];
             if (value == key.value && key.state == KeyState.Released) {
                 return true;
@@ -124,7 +133,8 @@ class Input {
     }
 
     public static mousePressed(value: number) {
-        for (let i in this.mouse) {
+        let i = this.mouse.length;
+        while (i--) {
             let mouse = this.mouse[i];
             if (value == mouse.value && mouse.state == MouseState.Pressed) {
                 return true;
@@ -134,7 +144,8 @@ class Input {
     }
 
     public static mouseDown(value: number) {
-        for (let i in this.mouse) {
+        let i = this.mouse.length;
+        while (i--) {
             let mouse = this.mouse[i];
             if (value == mouse.value && mouse.isDown) {
                 return true;
@@ -144,7 +155,8 @@ class Input {
     }
 
     public static mouseReleased(value: number) {
-        for (let i in this.mouse) {
+        let i = this.mouse.length;
+        while (i--) {
             let mouse = this.mouse[i];
             if (value == mouse.value && mouse.state == MouseState.Released) {
                 return true;
@@ -154,32 +166,37 @@ class Input {
     }
 
     public static buttonPressed(value: string): boolean {
-        for (let j in InputTypes.items) {
+        let j = InputTypes.items.length;
+        while (j--) {
             let input = InputTypes.items[j];
             if (input.name == value) {
                 if (input.keys.positive) {
-                    for (let k in input.keys.positive) {
+                    let k = input.keys.positive.length;
+                    while (k--) {
                         if (Input.keyPressed(input.keys.positive[k])) {
                             return true;
                         }
                     }
                 }
                 if (input.keys.negative) {
-                    for (let k in input.keys.negative) {
+                    let k = input.keys.negative.length;
+                    while (k--) {
                         if (Input.keyPressed(input.keys.negative[k])) {
                             return true;
                         }
                     }
                 }
                 if (input.mouse.positive) {
-                    for (let k in input.mouse.positive) {
+                    let k = input.mouse.positive.length;
+                    while (k--) {
                         if (Input.mousePressed(input.mouse.positive[k])) {
                             return true;
                         }
                     }
                 }
                 if (input.mouse.negative) {
-                    for (let k in input.mouse.negative) {
+                    let k = input.mouse.negative.length;
+                    while (k--) {
                         if (Input.mousePressed(input.mouse.negative[k])) {
                             return true;
                         }
@@ -191,32 +208,37 @@ class Input {
     }
 
     public static buttonDown(value: string): boolean {
-        for (let j in InputTypes.items) {
+        let j = InputTypes.items.length;
+        while (j--) {
             let input = InputTypes.items[j];
             if (input.name == value) {
                 if (input.keys.positive) {
-                    for (let k in input.keys.positive) {
+                    let k = input.keys.positive.length;
+                    while (k--) {
                         if (Input.keyDown(input.keys.positive[k])) {
                             return true;
                         }
                     }
                 }
                 if (input.keys.negative) {
-                    for (let k in input.keys.negative) {
+                    let k = input.keys.negative.length;
+                    while (k--) {
                         if (Input.keyDown(input.keys.negative[k])) {
                             return true;
                         }
                     }
                 }
                 if (input.mouse.positive) {
-                    for (let k in input.mouse.positive) {
+                    let k = input.mouse.positive.length;
+                    while (k--) {
                         if (Input.mouseDown(input.mouse.positive[k])) {
                             return true;
                         }
                     }
                 }
                 if (input.mouse.negative) {
-                    for (let k in input.mouse.negative) {
+                    let k = input.mouse.negative.length;
+                    while (k--) {
                         if (Input.mouseDown(input.mouse.negative[k])) {
                             return true;
                         }
@@ -228,32 +250,37 @@ class Input {
     }
 
     public static buttonReleased(value: string): boolean {
-        for (let j in InputTypes.items) {
+        let j = InputTypes.items.length;
+        while (j--) {
             let input = InputTypes.items[j];
             if (input.name == value) {
                 if (input.keys.positive) {
-                    for (let k in input.keys.positive) {
+                    let k = input.keys.positive.length;
+                    while (k--) {
                         if (Input.keyReleased(input.keys.positive[k])) {
                             return true;
                         }
                     }
                 }
                 if (input.keys.negative) {
-                    for (let k in input.keys.negative) {
+                    let k = input.keys.negative.length;
+                    while (k--) {
                         if (Input.keyReleased(input.keys.negative[k])) {
                             return true;
                         }
                     }
                 }
                 if (input.mouse.positive) {
-                    for (let k in input.mouse.positive) {
+                    let k = input.mouse.positive.length;
+                    while (k--) {
                         if (Input.mouseReleased(input.mouse.positive[k])) {
                             return true;
                         }
                     }
                 }
                 if (input.mouse.negative) {
-                    for (let k in input.mouse.negative) {
+                    let k = input.mouse.negative.length;
+                    while (k--) {
                         if (Input.mouseReleased(input.mouse.negative[k])) {
                             return true;
                         }
@@ -265,16 +292,19 @@ class Input {
     }
 
     public static getAxis(value: string): number {
-        for (let j in InputTypes.items) {
+        let j = InputTypes.items.length;
+        while (j--) {
             let input = InputTypes.items[j];
             if (input.name == value) {
                 if (input.keys) {
-                    for (let k in input.keys.positive) {
+                    let k = input.keys.positive.length;
+                    while (k--) {
                         if (Input.keyDown(input.keys.positive[k])) {
                             return 1;
                         }
                     }
-                    for (let k in input.keys.negative) {
+                    k = input.keys.negative.length;
+                    while (k--) {
                         if (Input.keyDown(input.keys.negative[k])) {
                             return -1;
                         }
@@ -291,7 +321,8 @@ class Input {
             keys?: { positive?: number[], negative?: number[] },
             mouse?: { positive?: number[], negative?: number[] }
         };
-        for (let i = 0; i < InputTypes.items.length; i++) {
+        let i = InputTypes.items.length;
+        while (i--) {
             if (InputTypes.items[i].name == name) {
                 obj = InputTypes.items[i];
             }
@@ -334,7 +365,8 @@ class Input {
             keys?: { positive?: number[], negative?: number[] },
             mouse?: { positive?: number[], negative?: number[] }
         };
-        for (let i = 0; i < InputTypes.items.length; i++) {
+        let i = InputTypes.items.length;
+        while (i--) {
             if (InputTypes.items[i].name == name) {
                 obj = InputTypes.items[i];
             }

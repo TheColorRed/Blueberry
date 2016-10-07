@@ -24,7 +24,7 @@ class Transform extends Component {
 
     public get up(): Vector2 {
         return new Vector2(
-            -Math.cos(this.rotation.degrees * (Math.PI / 180)),
+            Math.cos(this.rotation.degrees * (Math.PI / 180)),
             Math.sin(this.rotation.degrees * (Math.PI / 180))
         );
     }

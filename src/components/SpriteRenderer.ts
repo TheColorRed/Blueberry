@@ -10,6 +10,7 @@ class SpriteRenderer extends Component {
 
     private _frameList: number[] = [];
     private _isVisible: boolean = true;
+    private _maxlen: number = 0;
 
     public get isVisible() {
         return this._isVisible;
@@ -18,14 +19,15 @@ class SpriteRenderer extends Component {
     start() {
         this._frames = this.sprite.frames;
         this._sprites = this.sprite.sprites;
+        this._maxlen = Math.max(this.sprite.height, this.sprite.width);
     }
 
     update() {
         if (
-            this.transform.position.x + this.sprite.width < 0 ||
-            this.transform.position.y + this.sprite.height < 0 ||
-            this.transform.position.x > Stage.width ||
-            this.transform.position.y > Stage.height
+            this.transform.position.x + this._maxlen < 0 ||
+            this.transform.position.y + this._maxlen < 0 ||
+            this.transform.position.x - this._maxlen > Stage.width ||
+            this.transform.position.y - this._maxlen > Stage.height
         ) {
             this._isVisible = false;
         } else {
@@ -102,7 +104,8 @@ class SpriteRenderer extends Component {
     public playFrames(...frames: number[]): void {
         if (!this.isSame(this._frameList, frames)) {
             let sprites: SubSprite[] = [];
-            for (let i in frames) {
+            let i = frames.length;
+            while (i--) {
                 let sprite = this.getFrame(frames[i]);
                 if (sprite) {
                     sprites.push(sprite);
@@ -130,7 +133,8 @@ class SpriteRenderer extends Component {
     }
 
     private getFrame(frame): SubSprite {
-        for (let i in this.sprite.sprites) {
+        let i = this.sprite.sprites.length;
+        while (i--) {
             let sprite = this.sprite.sprites[i];
             if (sprite.frame == frame) {
                 return sprite;

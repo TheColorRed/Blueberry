@@ -61,22 +61,26 @@ class Sprite {
     }
 
     public getRow(row: number): number[] {
-        let sprites: number[] =[];
-        this._sprites.forEach(sprite => {
+        let sprites: number[] = [];
+        let len = this._sprites.length;
+        for (let i = 0; i < len; i++) {
+            let sprite = this._sprites[i];
             if (sprite.row == row) {
                 sprites.push(sprite.frame);
             }
-        });
+        }
         return sprites;
     }
 
     public getCol(col: number): number[] {
-        let sprites: number[] =[];
-        this._sprites.forEach(sprite => {
+        let sprites: number[] = [];
+        let len = this._sprites.length;
+        for (let i = 0; i < len; i++) {
+            let sprite = this._sprites[i];
             if (sprite.col == col) {
                 sprites.push(sprite.frame);
             }
-        });
+        }
         return sprites;
     }
 

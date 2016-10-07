@@ -31,23 +31,24 @@ class GameObject extends Obj {
     }
 
     public getComponent<T extends Component>(type: ComponentType<T> | string): T {
-        for (let i = 0; i < this._components.length; i++) {
+        let i = this._components.length;
+        while (i--) {
+            let comp = this._components[i];
             if (typeof type === 'string') {
                 let evalT = type.replace(/[^a-zA-Z0-9_]/ig, '');
-                if (this._components[i].constructor.name == evalT) {
-                    return this._components[i] as T;
+                if (comp.constructor.name == evalT) {
+                    return comp as T;
                 }
-            } else {
-                if (this._components[i].constructor == type) {
-                    return this._components[i] as T;
-                }
+            } else if (comp.constructor == type) {
+                return comp as T;
             }
         }
         return null;
     }
 
     public static getByName(name: string): GameObject {
-        for (let i in Engine.gameObjects) {
+        let i = Engine.gameObjects.length;
+        while(i--) {
             let obj = Engine.gameObjects[i];
             if (obj.name == name) {
                 return obj;
@@ -62,15 +63,17 @@ class GameObject extends Obj {
 
     public sendMessage(message: string, ...options: any[]) {
         if (!this._isActive) { return; }
-        this._components.forEach(component => {
+        let i = this._components.length;
+        while (i--) {
+            let component = this._components[i];
+            if (message == 'start') {
+                if (component['started']) { return; }
+                component['started'] = true;
+            } else if (!component['started']) { return; }
             if (typeof component[message] == 'function') {
-                if (message == 'start') {
-                    if (component['started']) { return; }
-                    component['started'] = true;
-                }
                 component[message].apply(component, options);
             }
-        });
+        }
     }
 
 }

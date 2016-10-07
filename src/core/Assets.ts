@@ -4,7 +4,8 @@ class Assets {
     public static sounds: SoundAsset[] = [];
 
     public static getSprite(name: string): Sprite {
-        for (let i = 0; i < this.sprites.length; i++){
+        let i = this.sprites.length;
+        while(i--){
             if (this.sprites[i].name == name) {
                 return this.sprites[i].sprite;
             }
@@ -13,7 +14,8 @@ class Assets {
     }
 
     public static getSound(name: string): Sound {
-        for (let i = 0; i < this.sounds.length; i++){
+        let i = this.sounds.length;
+        while(i--){
             if (this.sounds[i].name == name) {
                 return this.sounds[i].sound;
             }

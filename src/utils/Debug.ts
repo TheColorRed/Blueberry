@@ -11,7 +11,8 @@ class Debug {
             ctx.strokeStyle = '#00ff00';
             ctx.lineWidth = 1;
             ctx.moveTo(collider.points[0].x, collider.points[0].y);
-            for (let i in collider.points) {
+            let i = collider.points.length;
+            while(i--){
                 let point = collider.points[i];
                 ctx.lineTo(point.x, point.y);
             }

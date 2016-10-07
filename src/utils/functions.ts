@@ -78,11 +78,11 @@ function instantiate<T extends Prefab>(object: GameObjectType<T> | GameObject, p
 function destroy(object: GameObject | Component, delay: number = 0): void {
     if (delay <= 0) {
         object.destroy();
-        return;
+    } else {
+        invoke(function () {
+            object.destroy();
+        }, delay);
     }
-    invoke(function () {
-        object.destroy();
-    }, delay);
 }
 
 /**
