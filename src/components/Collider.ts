@@ -37,11 +37,15 @@ class Collider extends Component {
         if (this._points.length > 0) {
             // Set the point cordinates
             // Convert from local to global
+            let rotation = this.transform.rotation.degrees * (Math.PI / 180);
+            let cos = Math.cos(rotation);
+            let sin = Math.sin(rotation);
+            let origin = this.transform.position;
             for (let i in this._pointsOrig) {
                 let point = this._pointsOrig[i];
                 this._points[i] = new Vector2(
-                    point.x + this.transform.position.x,
-                    point.y + this.transform.position.y
+                    (cos * point.x) - (sin * point.y) + origin.x,
+                    (cos * point.y) + (sin * point.x) + origin.y
                 );
             }
             for (let i in Engine.gameObjects) {
