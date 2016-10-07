@@ -4,7 +4,7 @@ class Debug {
 
     public static drawCollider(item: GameObject) {
         let collider = item.getComponent(Collider);
-        if (collider.points.length > 0) {
+        if (collider && collider.points.length > 0) {
             let origin = item.getComponent(SpriteRenderer).sprite.getOrigin();
             let ctx = Stage.instance['_contextBuffer'];
             ctx.beginPath();

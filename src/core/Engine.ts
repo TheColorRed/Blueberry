@@ -103,7 +103,9 @@ class Engine {
 
         Engine.start();
         Engine.invoke();
+        Engine.earlyUpdate();
         Engine.update();
+        Engine.lateUpdate();
         Engine.keyboard();
         Engine.mouse();
         Engine.destroy();
@@ -113,6 +115,16 @@ class Engine {
     private static update() {
         Engine._gameObjects.forEach(go => {
             go.sendMessage('update');
+        });
+    }
+    private static earlyUpdate() {
+        Engine._gameObjects.forEach(go => {
+            go.sendMessage('earlyUpdate');
+        });
+    }
+    private static lateUpdate() {
+        Engine._gameObjects.forEach(go => {
+            go.sendMessage('lateUpdate');
         });
     }
 

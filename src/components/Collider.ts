@@ -4,33 +4,56 @@ class Collider extends Component {
 
     private collisions: GameObject[] = [];
 
-    public points: Vector2[] = [];
+    private _points: Vector2[] = [];
+    private _pointsOrig: Vector2[] = [];
+
+    public posFrameStart: Vector2 = Vector2.zero;
+
+    public get points(): Vector2[] {
+        return this._points;
+    }
 
     start() {
         this.spr = this.getComponent(SpriteRenderer);
-        this.points = this.getSpritePoints(this.gameObject);
+        if (this._points.length == 0) {
+            this._points = this.getSpritePoints(this.gameObject);
+            this._pointsOrig = this.getSpritePoints(this.gameObject);
+        }
     }
 
     public addPoint(point: Vector2) {
-        this.points.push(point);
+        this._points.push(point);
+        this._pointsOrig.push(point);
     }
 
     public setPoints(points: Vector2[]) {
-        this.points = points;
+        this._points = [];
+        for (let i in points) {
+            this.addPoint(points[i]);
+        }
     }
 
-    update() {
-        if (this.points.length > 0) {
+    lateUpdate() {
+        if (this._points.length > 0) {
+            // Set the point cordinates
+            // Convert from local to global
+            for (let i in this._pointsOrig) {
+                let point = this._pointsOrig[i];
+                this._points[i] = new Vector2(
+                    point.x + this.transform.position.x,
+                    point.y + this.transform.position.y
+                );
+            }
             for (let i in Engine.gameObjects) {
                 let go = Engine.gameObjects[i];
                 if (go == this.gameObject) { continue; }
                 let coll = go.getComponent(Collider);
                 let spr = go.getComponent(SpriteRenderer);
-                if (coll && coll.points.length > 0) {
+                if (coll && coll._points.length > 0) {
                     let origin2: Vector2 = spr.sprite.getOrigin();
                     let idx = this.collisions.indexOf(go);
                     let rect2 = this.getSpritePoints(go);
-                    if (this.doPolygonsIntersect(this.points, coll.points)) {
+                    if (this.doPolygonsIntersect(this._points, coll._points)) {
                         if (idx == -1) {
                             this.gameObject.sendMessage('collisionEnter', go);
                             this.collisions.push(go);
