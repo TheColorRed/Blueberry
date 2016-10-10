@@ -23,8 +23,7 @@ class SpriteRenderer extends Component {
     }
 
     update() {
-        if (
-            this.transform.position.x + this._maxlen < 0 ||
+        if (this.transform.position.x + this._maxlen < 0 ||
             this.transform.position.y + this._maxlen < 0 ||
             this.transform.position.x - this._maxlen > Stage.width ||
             this.transform.position.y - this._maxlen > Stage.height
@@ -33,13 +32,15 @@ class SpriteRenderer extends Component {
         } else {
             this._isVisible = true;
         }
-        if (this._frames > 0 && this._sprites.length > 0 && this.isVisible) {
-            this._currentTime += Time.deltaTime * 0.1;
-            let duration = this.sprite.duration;
+        if (this.sprite.animated) {
+            if (this._frames > 0 && this._sprites.length > 0 && this.isVisible) {
+                this._currentTime += Time.deltaTime * 0.1;
+                let duration = this.sprite.duration;
 
-            if (this._currentTime > duration * Time.deltaTime) {
-                this._currentTime = 0;
-                this.frame = (this.frame + 1) % this._frames;
+                if (this._currentTime > duration * Time.deltaTime) {
+                    this._currentTime = 0;
+                    this.frame = (this.frame + 1) % this._frames;
+                }
             }
         }
     }
@@ -104,8 +105,8 @@ class SpriteRenderer extends Component {
     public playFrames(...frames: number[]): void {
         if (!this.isSame(this._frameList, frames)) {
             let sprites: SubSprite[] = [];
-            let i = frames.length;
-            while (i--) {
+            let len = frames.length;
+            for (let i = 0; i < len; i++) {
                 let sprite = this.getFrame(frames[i]);
                 if (sprite) {
                     sprites.push(sprite);
@@ -133,8 +134,8 @@ class SpriteRenderer extends Component {
     }
 
     private getFrame(frame): SubSprite {
-        let i = this.sprite.sprites.length;
-        while (i--) {
+        let len = this.sprite.sprites.length;
+        for (let i = 0; i < len; i++) {
             let sprite = this.sprite.sprites[i];
             if (sprite.frame == frame) {
                 return sprite;

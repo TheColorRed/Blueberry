@@ -1,17 +1,24 @@
+enum CanvasType { Html5, WebGl }
+
 class Stage {
 
     public canvas: HTMLCanvasElement;
     public context: CanvasRenderingContext2D;
+    public webgl: WebGLRenderingContext;
 
-    // private _canvasBuffer: HTMLCanvasElement;
-    // private _contextBuffer: CanvasRenderingContext2D;
+    private canvasType: CanvasType = CanvasType.Html5;
 
     public static instance: Stage = null;
 
-    public static create(selector: string) {
+    public static create(selector: string, canvasType: CanvasType = CanvasType.Html5) {
         let stage = new Stage();
+        stage.canvasType = canvasType;
         stage.canvas = document.querySelector(selector) as HTMLCanvasElement;
-        stage.context = stage.canvas.getContext('2d') as CanvasRenderingContext2D;
+        if (canvasType == CanvasType.Html5) {
+            stage.context = stage.canvas.getContext('2d') as CanvasRenderingContext2D;
+        } else {
+            stage.webgl = stage.canvas.getContext('webgl') as WebGLRenderingContext;
+        }
         Stage.instance = stage;
         Stage.fillParent();
         stage.canvas.addEventListener('mousemove', event => {
@@ -21,13 +28,6 @@ class Stage {
             event.preventDefault();
         })
     }
-
-    // public static createBuffer() {
-    //     Stage.instance._canvasBuffer = document.createElement('canvas') as HTMLCanvasElement;
-    //     Stage.instance._canvasBuffer.width = Stage.instance.canvas.width;
-    //     Stage.instance._canvasBuffer.height = Stage.instance.canvas.height;
-    //     Stage.instance._contextBuffer = Stage.instance._canvasBuffer.getContext('2d') as CanvasRenderingContext2D;
-    // }
 
     public static get width(): number {
         return Stage.instance.canvas.width;
@@ -120,26 +120,15 @@ class Stage {
         });
     }
 
-    // public static clearBuffer() {
-    //     Stage.instance._canvasBuffer.width = Stage.instance._canvasBuffer.width;
-    // }
-
-    // public static draw() {
-    //     Stage.instance.canvas.width = Stage.instance.canvas.width;
-    //     Stage.instance.context.drawImage(
-    //         Stage.instance._canvasBuffer, 0, 0
-    //     );
-    // }
-
     public static clear() {
         Stage.instance.canvas.width = Stage.instance.canvas.width;
     }
 
-    public static draw(transform: Transform, spr: SpriteRenderer, image: HTMLImageElement | HTMLCanvasElement | HTMLVideoElement, offsetX: number, offsetY: number, width?: number, height?: number, canvasOffsetX?: number, canvasOffsetY?: number, canvasImageWidth?: number, canvasImageHeight?: number) {
+    public static draw(spr: SpriteRenderer, image: HTMLImageElement | HTMLCanvasElement | HTMLVideoElement, offsetX: number, offsetY: number, width?: number, height?: number, canvasOffsetX?: number, canvasOffsetY?: number, canvasImageWidth?: number, canvasImageHeight?: number) {
         let ctx = Stage.instance.context;
         ctx.save();
-        ctx.translate(transform.position.x, transform.position.y);
-        ctx.rotate(transform.rotation.degrees * (Math.PI / 180));
+        ctx.translate(spr.transform.position.x, spr.transform.position.y);
+        ctx.rotate(spr.transform.rotation.degrees * (Math.PI / 180));
         ctx.drawImage(
             image,
             Math.round(offsetX), Math.round(offsetY),
@@ -148,6 +137,17 @@ class Stage {
             Math.round(-(spr.sprite.width / 2)), Math.round(-(spr.sprite.height / 2)),
             Math.round(canvasImageWidth), Math.round(canvasImageHeight)
         );
+        ctx.restore();
+    }
+
+    public static drawText(text: GUIText) {
+        let ctx = Stage.instance.context;
+        ctx.save();
+        ctx.rotate(text.transform.rotation.degrees * (Math.PI / 180));
+        ctx.font = `${text.size}pt ${text.font}`;
+        ctx.textAlign = text.horizontalAlign;
+        ctx.textBaseline = text.verticalAlign;
+        ctx.fillText(text.text, text.transform.position.x, text.transform.position.y);
         ctx.restore();
     }
 
@@ -169,7 +169,7 @@ class Stage {
         while (i--) {
             let item = gameObjects[i];
             let j = item.components.length;
-            while(j--){
+            while (j--) {
                 let comp = item.components[j];
                 if (
                     comp instanceof SpriteRenderer &&
@@ -179,7 +179,7 @@ class Stage {
                     let sprite: SubSprite = comp.drawableSprite();
                     let origin: Vector2 = comp.sprite.getOrigin();
                     Stage.draw(
-                        item.transform, comp,
+                        comp,
                         // Source Image
                         comp.sprite.image,
                         // Position in the sprite sheet
@@ -191,12 +191,26 @@ class Stage {
                         // Size on the canvas
                         sprite.width, sprite.height
                     );
-                    if (Debug.enabled) {
-                        let collider = comp.getComponent(Collider);
-                        // Draw debugging information
-                        Debug.drawOrigin(item);
-                        Debug.drawCollider(item);
-                    }
+                }
+            }
+            if (Debug.enabled) {
+                // let collider = comp.getComponent(Collider);
+                // Draw debugging information
+                Debug.drawOrigin(item);
+                Debug.drawCollider(item);
+            }
+        }
+        i = gameObjects.length;
+        while (i--) {
+            let item = gameObjects[i];
+            let j = item.components.length;
+            while (j--) {
+                let comp = item.components[j];
+                if (
+                    comp instanceof GUIText &&
+                    comp['started']
+                ) {
+                    Stage.drawText(comp);
                 }
             }
         }

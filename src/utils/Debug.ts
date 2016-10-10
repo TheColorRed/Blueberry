@@ -6,7 +6,7 @@ class Debug {
         let collider = item.getComponent(Collider);
         if (collider && collider.points.length > 0) {
             let origin = item.getComponent(SpriteRenderer).sprite.getOrigin();
-            let ctx = Stage.instance['_contextBuffer'];
+            let ctx = Stage.instance.context;
             ctx.beginPath();
             ctx.strokeStyle = '#00ff00';
             ctx.lineWidth = 1;
@@ -22,10 +22,14 @@ class Debug {
     }
 
     public static drawOrigin(item: GameObject) {
-        let ctx = Stage.instance['_contextBuffer'];
+        let ctx = Stage.instance.context;
         ctx.beginPath();
         ctx.strokeStyle = '#0000ff';
         ctx.lineWidth = 2;
+        ctx.font = '10pt sans-serif';
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'middle';
+        ctx.fillText(item.name, item.transform.position.x, item.transform.position.y);
         ctx.moveTo(
             item.transform.position.x,
             item.transform.position.y

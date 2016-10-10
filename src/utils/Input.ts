@@ -292,19 +292,19 @@ class Input {
     }
 
     public static getAxis(value: string): number {
-        let j = InputTypes.items.length;
-        while (j--) {
+        let len = InputTypes.items.length;
+        for (let j = 0; j < len; j++) {
             let input = InputTypes.items[j];
             if (input.name == value) {
                 if (input.keys) {
-                    let k = input.keys.positive.length;
-                    while (k--) {
+                    let len2 = input.keys.positive.length;
+                    for (let k = 0; k < len2; k++) {
                         if (Input.keyDown(input.keys.positive[k])) {
                             return 1;
                         }
                     }
-                    k = input.keys.negative.length;
-                    while (k--) {
+                    let len3 = input.keys.negative.length;
+                    for (let k = 0; k < len3; k++) {
                         if (Input.keyDown(input.keys.negative[k])) {
                             return -1;
                         }
@@ -445,8 +445,8 @@ class InputTypes {
         {
             name: 'vertical',
             keys: {
-                positive: [Keyboard.S, Keyboard.DOWN],
-                negative: [Keyboard.W, Keyboard.UP]
+                positive: [Keyboard.W, Keyboard.UP],
+                negative: [Keyboard.S, Keyboard.DOWN]
             }
         },
         {

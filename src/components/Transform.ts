@@ -1,51 +1,89 @@
 class Transform extends Component {
 
-    public position: Vector2 = Vector2.zero;
+    private _position: Vector2 = Vector2.zero;
     public rotation: Rotation = Rotation.up;
     public scale: Vector2 = Vector2.zero;
+
+    public parent: Transform = null;
 
     private _dir: number = null;
     private _speed: number = null;
     private _motionSet: boolean = false;
 
+    [Symbol.iterator]() {
+        let index: number = -1;
+        let data: Transform[] = this.children();
+        return {
+            next: ()=>({value: data[++index], done: !(index in data)})
+        }
+    }
+
+    private children(): Transform[] {
+        let i = Engine.gameObjects.length;
+        let trans: Transform[] = [];
+        while (i--) {
+            let go = Engine.gameObjects[i];
+            if (go.transform.parent == this) {
+                trans.push(go.transform);
+            }
+        }
+        return trans;
+    }
+
+    public set position(value: Vector2) {
+        this._position = value || this.parent.transform.position || Vector2.zero;
+    }
+
+    public get position(): Vector2 {
+        return this._position;
+    }
+
+    public get length(): number {
+        return this.children().length;
+    }
+
     public get forward(): Vector2 {
+        const phi = (this.rotation.degrees) * (Math.PI / 180);
         return new Vector2(
-            Math.cos(this.rotation.degrees * (Math.PI / 180)),
-            Math.sin(this.rotation.degrees * (Math.PI / 180))
+            Math.cos(phi),
+            Math.sin(phi)
         );
     }
 
     public get backward(): Vector2 {
+        const phi = (this.rotation.degrees - 180) * (Math.PI / 180);
         return new Vector2(
-            -Math.cos(this.rotation.degrees * (Math.PI / 180)),
-            -Math.sin(this.rotation.degrees * (Math.PI / 180))
+            Math.cos(phi),
+            Math.sin(phi)
         );
     }
 
     public get up(): Vector2 {
+        const phi = (this.rotation.degrees - 90) * (Math.PI / 180);
         return new Vector2(
-            Math.cos(this.rotation.degrees * (Math.PI / 180)),
-            Math.sin(this.rotation.degrees * (Math.PI / 180))
+            Math.cos(phi),
+            Math.sin(phi)
         );
     }
 
     public get down(): Vector2 {
+        const phi = (this.rotation.degrees + 90) * (Math.PI / 180);
         return new Vector2(
-            Math.cos(this.rotation.degrees * (Math.PI / 180)),
-            -Math.sin(this.rotation.degrees * (Math.PI / 180))
+            Math.cos(phi),
+            Math.sin(phi)
         );
     }
 
     public translate(translation: Vector2): void {
-        this.position = new Vector2(
-            this.position.x + translation.x,
-            this.position.y + translation.y
+        this._position = new Vector2(
+            this._position.x + translation.x,
+            this._position.y + translation.y
         );
     }
 
     public lookAt(target: Vector2): void {
         this.rotation.degrees = Vector2.degrees(
-            this.position,
+            this._position,
             target
         );
     }
@@ -55,7 +93,7 @@ class Transform extends Component {
         if (typeof target == 'number') {
             dir = target;
         } else {
-            dir = Vector2.degrees(this.position, target);
+            dir = Vector2.degrees(this._position, target);
         }
         this._dir = dir;
         this._speed = speed;

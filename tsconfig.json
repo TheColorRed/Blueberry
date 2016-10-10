@@ -35,6 +35,7 @@
         "src/components/Transform.ts",
         "src/components/ScreenWarp.ts",
         "src/components/Collider.ts",
+        "src/components/GUIText.ts",
         // Load the entry point
         "src/main.ts"
     ]

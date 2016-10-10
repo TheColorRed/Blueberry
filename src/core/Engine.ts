@@ -3,9 +3,9 @@ class Engine {
     private static _lastLoopTime: number = Time.getNanoSeconds;
     private static _targetFps: number = 120;
     private static _optimalTime: number = 1000000000 / Engine._targetFps;
-    // private static _lastFpsTime: number = 0;
-    // private static _gameLoopTick: number = 0;
-    // private static _isPlaying: boolean = true;
+    private static _lastFpsTime: number = 0;
+    private static _gameLoopTick: number = 0;
+    private static _isPlaying: boolean = true;
     private static _startTime: number = new Date().getTime();
     private static _gameObjects: GameObject[] = [];
     private static _invokers: Invoke[] = [];
@@ -27,6 +27,10 @@ class Engine {
 
     public static run(callback: Function) {
         this._run = callback;
+    }
+
+    public static set fixedRate(val: number) {
+        this._fixedSpeed = val;
     }
 
     public static assets(assets: { sprites?: [{ name: string, source: string }], sounds?: [{ name: string, source: string }] }) {
@@ -99,13 +103,13 @@ class Engine {
         var nanoSeconds = Time.getNanoSeconds;
         var now = nanoSeconds;
         var updateLength = now - Engine._lastLoopTime;
-        // Engine._lastLoopTime = now;
+        Engine._lastLoopTime = now;
         var delta = updateLength / Engine._optimalTime;
 
-        // Engine._lastFpsTime += updateLength;
-        // if (Engine._lastFpsTime >= 1000000000) {
-        //     Engine._lastFpsTime = 0;
-        // }
+        Engine._lastFpsTime += updateLength;
+        if (Engine._lastFpsTime >= 1000000000) {
+            Engine._lastFpsTime = 0;
+        }
 
         Time.setDeltaTime(delta / Engine._targetFps);
 

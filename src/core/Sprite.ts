@@ -1,6 +1,7 @@
 class Sprite {
 
-    public duration = 1;
+    public duration: number = 1;
+    public animated: boolean = true;
 
     private _file: string = '';
     private _originX = 0;
@@ -15,6 +16,10 @@ class Sprite {
     public constructor(asset: HTMLImageElement) {
         this._image = asset;
         this.subImages(asset.width, asset.height, 1, 1);
+    }
+
+    public getFrame(index: number): SubSprite {
+        return this._sprites[index];
     }
 
     public subImages(width: number, height: number, total: number, rows = 1) {

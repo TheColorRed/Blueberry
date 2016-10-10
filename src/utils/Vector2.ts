@@ -19,38 +19,62 @@ class Vector2 {
         return Math.atan2(b.y - a.y, b.x - a.x) * 180 / Math.PI;
     }
 
+    public static degToRad(a: number): number {
+        return a * (Math.PI / 180);
+    }
+
     public get normalized(): Vector2 {
         // return new Vector2(b.x - a.x, b.y - a.y);
         let max = Math.max(this._x, this._y);
         return new Vector2(this._x / max, this._y / max);
     }
 
-    public times(amount: number): Vector2 {
-        let x = this._x * amount;
-        let y = this._y * amount;
-        let v = new Vector2(x, y);
-        return v;
+    public times(a: number, b?: number): Vector2 {
+        let x = 0, y = 0;
+        if (arguments.length == 1) {
+            x = this._x * a;
+            y = this._y * a;
+        } else {
+            x = this._x * a;
+            y = this._y * b;
+        }
+        return new Vector2(x, y);
     }
 
-    public dividedBy(amount: number): Vector2 {
-        let x = this._x / amount;
-        let y = this._y / amount;
-        let v = new Vector2(x, y);
-        return v;
+    public dividedBy(a: number, b?: number): Vector2 {
+        let x = 0, y = 0;
+        if (arguments.length == 1) {
+            x = this._x / a;
+            y = this._y / a;
+        } else {
+            x = this._x / a;
+            y = this._y / b;
+        }
+        return new Vector2(x, y);
     }
 
-    public plus(amount: number, direction?: string): Vector2 {
-        let x = this._x + amount;
-        let y = this._y + amount;
-        let v = new Vector2(x, y);
-        return v;
+    public plus(a: number, b?: number): Vector2 {
+        let x = 0, y = 0;
+        if (arguments.length == 1) {
+            x = this._x + a;
+            y = this._y + a;
+        } else {
+            x = this._x + a;
+            y = this._y + b;
+        }
+        return new Vector2(x, y);
     }
 
-    public minus(amount: number): Vector2 {
-        let x = this._x - amount;
-        let y = this._y - amount;
-        let v = new Vector2(x, y);
-        return v;
+    public minus(a: number, b?: number): Vector2 {
+        let x = 0, y = 0;
+        if (arguments.length == 1) {
+            x = this._x - a;
+            y = this._y - a;
+        } else {
+            x = this._x - a;
+            y = this._y - b;
+        }
+        return new Vector2(x, y);
     }
 
     public get x(): number {
